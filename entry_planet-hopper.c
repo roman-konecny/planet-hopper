@@ -86,7 +86,7 @@ int entry(int argc, char **argv) {
 	memset(world, 0, sizeof(World));
 
 	sprites[SPRITE_planet] = (Sprite){ .image=load_image_from_disk(STR("pics/planet1.png"), get_heap_allocator()), .size=v2(250.0, 250.0) };
-	sprites[SPRITE_player] = (Sprite){ .image=load_image_from_disk(STR("pics/player.png"), get_heap_allocator()), .size=v2(70.0, 70.0) };
+	sprites[SPRITE_player] = (Sprite){ .image=load_image_from_disk(STR("pics/player1.png"), get_heap_allocator()), .size=v2(70.0, 70.0) };
 
 	Entity* planet1_en = entity_create();
 	setup_planet(planet1_en);
@@ -97,9 +97,19 @@ int entry(int argc, char **argv) {
 	float64 last_time = os_get_current_time_in_seconds();
 	while (!window.should_close) {
 
-		// Setups + FPS
+		// Setups
 		reset_temporary_storage();
 		draw_frame.projection = m4_make_orthographic_projection(window.width * -0.5, window.width * 0.5, window.height * -0.5, window.height * 0.5, -1, 10);
+
+		// Camera
+		{
+			float zoom = 2.3;
+			draw_frame.view = m4_make_scale(v3(1.0, 1.0, 1.0));
+			draw_frame.view = m4_mul(draw_frame.view, m4_make_translation(v3(player_en->pos.x, player_en->pos.y, 0)));
+			draw_frame.view = m4_mul(draw_frame.view, m4_make_scale(v3(1.0 / zoom, 1.0 / zoom, 1.0)));
+		}
+
+		// FPS
 		float64 now = os_get_current_time_in_seconds();
 		if ((int)now != (int)last_time) log("%.2f FPS\n%.2fms", 1.0/(now-last_time), (now-last_time)*1000);
 		float64 delta_t = now - last_time;
