@@ -64,11 +64,15 @@ void entity_destroy(Entity* entity) {
 void setup_player(Entity* en) {
 	en->arch = arch_player;
 	en->sprite_id = SPRITE_player;
+	en->pos.x = 300.0;
+	en->pos.y = 300.0;
 }
 
-void setup_planet(Entity* en) {
+void setup_planet(Entity* en, float pos_x, float pos_y) {
 	en->arch = arch_planet;
 	en->sprite_id = SPRITE_planet;
+	en->pos.x = pos_x;
+	en->pos.y = pos_y;
 }
 
 int entry(int argc, char **argv) {
@@ -89,7 +93,9 @@ int entry(int argc, char **argv) {
 	sprites[SPRITE_player] = (Sprite){ .image=load_image_from_disk(STR("pics/player1.png"), get_heap_allocator()), .size=v2(70.0, 70.0) };
 
 	Entity* planet1_en = entity_create();
-	setup_planet(planet1_en);
+	Entity* planet2_en = entity_create();
+	setup_planet(planet1_en,0,0);
+	setup_planet(planet2_en,400,150);
 	Entity* player_en = entity_create();
 	setup_player(player_en);
 
@@ -127,7 +133,6 @@ int entry(int argc, char **argv) {
 						Sprite* sprite = get_sprite(en->sprite_id);
 						Matrix4 xform = m4_scalar(1.0);
 						xform         = m4_translate(xform, v3(en->pos.x, en->pos.y, 0));
-						xform         = m4_translate(xform, v3(sprite->size.x * -0.5, 0.0, 0));
 						draw_image_xform(sprite->image, xform, sprite->size, COLOR_WHITE);
 						break;
 					}
@@ -135,12 +140,13 @@ int entry(int argc, char **argv) {
 
 			}
 		}
+
 		
 		// Game controll logic
 		if (is_key_just_pressed(KEY_ESCAPE)) {
 			window.should_close = true;
 		}
-		
+
 		Vector2 input_axis = v2(0, 0);
 		if (is_key_down('A')) {
 			input_axis.x -= 1.0;
@@ -159,6 +165,72 @@ int entry(int argc, char **argv) {
 		// Player movement
 		int speed = 175;
 		player_en->pos = v2_add(player_en->pos, v2_mulf(input_axis, speed * delta_t));
+
+		// Gravity
+		#define GRAVITY_CONSTANT 10000.0  // Adjusted for stronger gravity effect
+
+		// Calculate radii based on sprite sizes
+		float planet_radius = get_sprite(SPRITE_planet)->size.x / 2.0;
+		float player_radius = get_sprite(SPRITE_player)->size.x / 2.0;
+
+		// Calculate centers of the planet and player
+		Vector2 planet_center = {
+			planet1_en->pos.x + planet_radius,
+			planet1_en->pos.y + planet_radius
+		};
+		Vector2 player_center = {
+			player_en->pos.x + player_radius,
+			player_en->pos.y + player_radius
+		};
+
+		// Vector from player center to planet center
+		Vector2 to_planet = {
+			planet_center.x - player_center.x,
+			planet_center.y - player_center.y
+		};
+
+		// Calculate distance between centers
+		float distance_between_centers = sqrt(to_planet.x * to_planet.x + to_planet.y * to_planet.y);
+
+		// Calculate effective distance considering the surfaces of the sprites
+		float effective_distance = distance_between_centers - (planet_radius + player_radius);
+
+		// Check to prevent division by zero
+		if (distance_between_centers > 0) {
+			// Normalize the direction vector for force application
+			Vector2 direction = {
+				to_planet.x / distance_between_centers,
+				to_planet.y / distance_between_centers
+			};
+
+			// Apply gravitational force only if the player is outside the effective radius
+			if (effective_distance > 0) {
+				float force_magnitude = (GRAVITY_CONSTANT / (distance_between_centers * distance_between_centers))*250;
+				Vector2 gravity_velocity = {
+					direction.x * force_magnitude * delta_t,
+					direction.y * force_magnitude * delta_t
+				};
+				player_en->pos.x += gravity_velocity.x;
+				player_en->pos.y += gravity_velocity.y;
+			} else {
+				// Nudge the player out if within or overlapping the planet
+				float nudge_strength = 10.0;  // Adjusted for gentle nudge
+				Vector2 nudge = {
+					-direction.x * nudge_strength * delta_t,
+					-direction.y * nudge_strength * delta_t
+				};
+				player_en->pos.x += nudge.x;
+				player_en->pos.y += nudge.y;
+			}
+		}
+
+		// Debugging information
+		// printf("Planet center: (%.2f, %.2f)\n", planet_center.x, planet_center.y);
+		// printf("Player center: (%.2f, %.2f)\n", player_center.x, player_center.y);
+		// printf("Distance between centers: %.2f\n", distance_between_centers);
+		// printf("Effective distance: %.2f\n", effective_distance);
+		// printf("Player pos: (%.2f, %.2f)\n", player_en->pos.x, player_en->pos.y);
+
 
 		// Updates		
 		os_update(); 
