@@ -4,7 +4,6 @@
 data
 uid
 *.rdbg
-*.exe
 *.pdb
 *.sublime-workspace
 *.sublime-project
@@ -54,5 +53,3 @@ test_doc.vkn
 *.rdi
 
 google_trace.json
-
-build/*
