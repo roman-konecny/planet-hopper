@@ -4,7 +4,6 @@
 data
 uid
 *.rdbg
-*.pdb
 *.sublime-workspace
 *.sublime-project
 *.vs
@@ -15,7 +14,6 @@ uid
 *.ini
 *.VC.db
 *.obj
-*.ilk
 *.spall
 release/
 output.txt
