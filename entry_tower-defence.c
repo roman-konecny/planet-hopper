@@ -18,6 +18,7 @@ Gfx_Font *font;
 typedef enum SpriteID {
 	SPRITE_nil,
 	SPRITE_tower,
+	SPRITE_enemy,
 	SPRITE_MAX,
 } SpriteID;
 
@@ -110,6 +111,7 @@ Tower* setup_tower(Entity* en, Allocator heap) {
 
 Weapon* setup_weapon(Tower* t, Allocator heap) {
 	Weapon* weapon = alloc(heap, sizeof(Weapon));
+	return weapon;
 }
 
 void enemy_movement(Entity* enemy, Tower* t) {
@@ -135,12 +137,12 @@ void enemy_movement(Entity* enemy, Tower* t) {
 
 bool is_enemy_touching_tower(Entity* enemy, Tower* tower) {
     // Calculate the horizontal and vertical distances between the center of the tower and the top-left corner of the enemy
-    float horizontal_distance = fabs((tower->tower_center_pos.x - enemy->pos.x) - 5 / 2);
-    float vertical_distance = fabs((tower->tower_center_pos.y - enemy->pos.y) - 5 / 2);
+    float horizontal_distance = fabs((tower->tower_center_pos.x - enemy->pos.x) - sprites[SPRITE_enemy].size.x / 2);
+    float vertical_distance = fabs((tower->tower_center_pos.y - enemy->pos.y) - sprites[SPRITE_enemy].size.y / 2);
 
     // Check if the horizontal and vertical distances are less than the half widths/heights added together
-    return horizontal_distance <= (sprites[SPRITE_tower].size.x / 2 + 5 / 2) &&
-           vertical_distance <= (sprites[SPRITE_tower].size.y / 2 + 5 / 2);
+    return horizontal_distance <= (sprites[SPRITE_tower].size.x / 2 + sprites[SPRITE_enemy].size.x / 2) &&
+           vertical_distance <= (sprites[SPRITE_tower].size.y / 2 + sprites[SPRITE_enemy].size.y / 2);
 }
 
 void enemy_damage_tower(Entity* enemy, Tower* t) {
@@ -150,11 +152,11 @@ void enemy_damage_tower(Entity* enemy, Tower* t) {
 	}
 }
 
-void enemy_attack(Entity** enemies, Tower* t) {
+void enemy_attack(Enemy** enemies, Tower* t) {
 	for (int i = 0; i < MAX_ENEMIES; i++) {
-		if (enemies[i]->render_sprite) {
-			enemy_movement(enemies[i], t);
-			enemy_damage_tower(enemies[i], t);
+		if (enemies[i]->entity->render_sprite) {
+			enemy_movement(enemies[i]->entity, t);
+			enemy_damage_tower(enemies[i]->entity, t);
 		}
 	}
 }
@@ -172,6 +174,7 @@ Enemy* setup_enemy(Entity* en, SpriteID sprite, float pos_x, float pos_y, Alloca
 	enemy->entity = en;
 	enemy->health = 1;
 	enemy->dmg = 1;
+	return enemy;
 }
 
 int entry(int argc, char **argv) {
@@ -185,7 +188,7 @@ int entry(int argc, char **argv) {
 	window.x = 200;
 	window.y = 200;
 	window.clear_color = hex_to_rgba(0x000000ff);
-	float zoom = 1.5;
+	float zoom = 1.1;
 
 	font = load_font_from_disk(STR("C:/windows/fonts/arial.ttf"), heap);
 	assert(font, "Failed loading arial.ttf");
@@ -194,7 +197,8 @@ int entry(int argc, char **argv) {
 	world = alloc(heap, sizeof(World));
 	memset(world, 0, sizeof(World));
 
-	sprites[SPRITE_tower] = (Sprite){ .image=load_image_from_disk(STR("pics/tower.png"), heap), .size=v2(50.0, 50.0) };
+	sprites[SPRITE_tower] = (Sprite){ .image=load_image_from_disk(STR("pics/tower.png"), heap), .size=v2(100.0, 100.0) };
+	sprites[SPRITE_enemy] = (Sprite){ .image=load_image_from_disk(STR("pics/Enemies/enemy1.png"), heap), .size=v2(16.0, 16.0) };
     Entity* tower_en = entity_create();
     Tower* tower = setup_tower(tower_en, heap);
 
@@ -217,7 +221,7 @@ int entry(int argc, char **argv) {
 			tower->tower_center_pos.y + direction.y
 		);
 
-		enemies[i] = setup_enemy(en, SPRITE_nil, spawn_position.x, spawn_position.y, heap);
+		enemies[i] = setup_enemy(en, SPRITE_enemy, spawn_position.x, spawn_position.y, heap);
 	}
 
 	// Game Loop
@@ -238,6 +242,7 @@ int entry(int argc, char **argv) {
 		// Camera
 		{
 			draw_frame.view = m4_make_scale(v3(1.0, 1.0, 1.0));
+			draw_frame.view = m4_mul(draw_frame.view, m4_make_scale(v3(1.0 / zoom, 1.0 / zoom, 1.0)));
 		}
 
 		// FPS
@@ -272,7 +277,10 @@ int entry(int argc, char **argv) {
 					case (arch_enemy):
 					{
 						if (en->render_sprite) {
-							draw_rect(en->pos, v2(5, 5), COLOR_WHITE);
+							Sprite* sprite = get_sprite(en->sprite_id);
+							Matrix4 xform = m4_scalar(1.0);
+							xform         = m4_translate(xform, v3(en->pos.x, en->pos.y, 0));
+							draw_image_xform(sprite->image, xform, sprite->size, COLOR_WHITE);
 						}
 						
 						int cycle_step = current_cycle - start_cycle;
@@ -283,7 +291,7 @@ int entry(int argc, char **argv) {
 							int start_index = max(cycle_step * spawn_rate - spawn_rate, 0);  // Compute the start index safely
 							for (int i = start_index; i < min(start_index + spawn_rate, MAX_ENEMIES); i++) {
 								if (enemies[i] != NULL) {
-									enemies[i]->render_sprite = true;  // Safely activate rendering only if pointer is valid
+									enemies[i]->entity->render_sprite = true;  // Safely activate rendering only if pointer is valid
 								}
 							}
 						}
