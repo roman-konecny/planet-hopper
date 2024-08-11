@@ -33,7 +33,7 @@ typedef struct Context_Extra {
 //
 
 // Your epic project
-#include "entry_planet-hopper.c"
+#include "entry_tower-defence.c"
 
 // This is a minimal starting point for new projects. Copy & rename to get started
 // #include "oogabooga/examples/minimal_game_loop.c"

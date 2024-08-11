@@ -3,7 +3,7 @@
 #define MAX_ENTITY_COUNT 1024
 #define MAX_PLANETS 33
 #define PI 3.14159265358979323846
-#define MAX_SPEED 300.0
+#define MAX_SPEED 3000.0
 
 typedef struct Sprite {
 	Gfx_Image* image;
@@ -106,10 +106,10 @@ int entry(int argc, char **argv) {
 	world = alloc(get_heap_allocator(), sizeof(World));
 	memset(world, 0, sizeof(World));
 
-	sprites[SPRITE_planet] = (Sprite){ .image=load_image_from_disk(STR("pics/planet.png"), get_heap_allocator()), .size=v2(250.0, 250.0) };
-	sprites[SPRITE_planet2] = (Sprite){ .image=load_image_from_disk(STR("pics/planet2.png"), get_heap_allocator()), .size=v2(250.0, 250.0) };
-	sprites[SPRITE_planet3] = (Sprite){ .image=load_image_from_disk(STR("pics/planet3.png"), get_heap_allocator()), .size=v2(250.0, 250.0) };
-	sprites[SPRITE_planet4] = (Sprite){ .image=load_image_from_disk(STR("pics/planet4.png"), get_heap_allocator()), .size=v2(250.0, 250.0) };
+	sprites[SPRITE_planet] = (Sprite){ .image=load_image_from_disk(STR("pics/planet.png"), get_heap_allocator()), .size=v2(500.0, 500.0) };
+	sprites[SPRITE_planet2] = (Sprite){ .image=load_image_from_disk(STR("pics/planet2.png"), get_heap_allocator()), .size=v2(500.0, 500.0) };
+	sprites[SPRITE_planet3] = (Sprite){ .image=load_image_from_disk(STR("pics/planet3.png"), get_heap_allocator()), .size=v2(500.0, 500.0) };
+	sprites[SPRITE_planet4] = (Sprite){ .image=load_image_from_disk(STR("pics/planet4.png"), get_heap_allocator()), .size=v2(500.0, 500.0) };
 	sprites[SPRITE_player] = (Sprite){ .image=load_image_from_disk(STR("pics/player.png"), get_heap_allocator()), .size=v2(18.0, 37.0) };
 
 	// Initialize random number generator
@@ -123,7 +123,7 @@ int entry(int argc, char **argv) {
 	 // Define play area boundaries and section size
     float center_x = 0.0;
     float center_y = 0.0;
-    float distance_increment = 500.0;  // Distance between layers
+    float distance_increment = 1000.0;  // Distance between layers
     float angle_increment = PI / 4.0;  // 45 degrees for diagonal placement
 
 	// first planet in the center
@@ -167,11 +167,6 @@ int entry(int argc, char **argv) {
 
 		// Camera
 		{
-			if (is_key_down('-')) {
-				zoom -= 0.5;
-			} else if (is_key_down('+')) {
-				zoom -= 0.5;
-			}
 			draw_frame.view = m4_make_scale(v3(1.0, 1.0, 1.0));
 			draw_frame.view = m4_mul(draw_frame.view, m4_make_translation(v3(player_en->pos.x, player_en->pos.y, 0)));
 			draw_frame.view = m4_mul(draw_frame.view, m4_make_scale(v3(1.0 / zoom, 1.0 / zoom, 1.0)));
@@ -197,6 +192,7 @@ int entry(int argc, char **argv) {
 					Matrix4 xform = m4_scalar(1.0);
 					xform         = m4_translate(xform, v3(en->pos.x, en->pos.y, 0));
 					xform		  = m4_rotate_z(xform, en->rotation);
+					xform         = m4_translate(xform, v3(-sprite->size.x / 2, -sprite->size.y / 2, 0));
 					draw_image_xform(sprite->image, xform, sprite->size, COLOR_WHITE);
 					break;
 
@@ -246,6 +242,8 @@ int entry(int argc, char **argv) {
 
 		// Gravity
 		#define GRAVITY_CONSTANT 10000.0  // Adjusted for stronger gravity effect
+		bool on_planet = false;
+		Vector2 direction_from_planet_center = v2(0,0);
 
 		// Apply gravity from all planets
 		for (int i = 0; i < MAX_PLANETS; ++i) {
@@ -277,12 +275,15 @@ int entry(int argc, char **argv) {
 			// Calculate effective distance considering the surfaces of the sprites
 			float effective_distance = distance_between_centers - (planet_radius + player_radius);
 
+
 			// Normalize the direction vector for force application
 			if (distance_between_centers > 0) {
 				Vector2 direction = {
 					to_planet.x / distance_between_centers,
 					to_planet.y / distance_between_centers
 				};
+
+				float overlap = (planet_radius + player_radius) - distance_between_centers;
 
 				// Apply gravitational force only if the player is outside the effective radius
 				if (effective_distance > 0) {
@@ -295,12 +296,13 @@ int entry(int argc, char **argv) {
 					player_en->velocity.y += gravity_acceleration.y;
 				} else {
 					// Prevent the player from entering the planet's radius
-					float overlap = (planet_radius + player_radius) - distance_between_centers;
 					if (overlap > 0) {
+						on_planet = true;
+						direction_from_planet_center = v2_mul(to_planet, v2(-1, -1));
 						player_en->pos.x -= direction.x * overlap;
 						player_en->pos.y -= direction.y * overlap;
-						player_en->velocity.x *= 0.9999;
-						player_en->velocity.y *= 0.9999;
+						player_en->velocity.x *= 0.9995;
+						player_en->velocity.y *= 0.9995;
 					}
 				}
 			}
@@ -311,7 +313,11 @@ int entry(int argc, char **argv) {
 		// Update player rotation to face movement direction
 		if (current_speed > 0.0) {
 			// Adjust by PI/2 (90 degrees) for correct sprite alignment
-			player_en->rotation = atan2(player_en->velocity.x, player_en->velocity.y);
+			if (on_planet == true) {
+				player_en->rotation = atan2(direction_from_planet_center.x, direction_from_planet_center.y);
+			} else {
+				player_en->rotation = atan2(player_en->velocity.x, player_en->velocity.y);
+			}
     
 		}
 
