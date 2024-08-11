@@ -61,7 +61,7 @@ typedef struct Enemy {
 } Enemy;
 
 typedef struct Weapon {
-	Entity* entity;
+	Tower* tower;
 	Entity* target;
 	int speed;
 	int dmg;
@@ -106,6 +106,10 @@ Tower* setup_tower(Entity* en, Allocator heap) {
 	tower->inside_circle_pos = v2(tower->tower_center_pos.x - ((tower->defence_size.x - 2) / 2), tower->tower_center_pos.y - ((tower->defence_size.y - 2) / 2));
 	tower->health = 100;
 	return tower;
+}
+
+Weapon* setup_weapon(Tower* t, Allocator heap) {
+	Weapon* weapon = alloc(heap, sizeof(Weapon));
 }
 
 void enemy_movement(Entity* enemy, Tower* t) {
