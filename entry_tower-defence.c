@@ -114,24 +114,36 @@ void enemy_destroy(Missile* missile) {
 	missile->target = NULL;
 }
 
-Enemy* setup_enemy(Entity* en, SpriteID sprite, float pos_x, float pos_y, Allocator heap) {
-	en->arch = arch_enemy;
-	en->sprite_id = sprite;
-	en->render_sprite = false;
-	en->pos.x = pos_x;
-	en->pos.y = pos_y;
-	Enemy* enemy = alloc(heap, sizeof(Enemy));
-	enemy->entity = en;
+void setup_enemy(Enemy* enemy, SpriteID sprite, float pos_x, float pos_y) {
+	enemy->entity->sprite_id = sprite;
+	enemy->entity->pos.x = pos_x;
+	enemy->entity->pos.y = pos_y;
 	enemy->health = 1;
 	enemy->dmg = 1;
-	return enemy;
 }
 
-void create_enemy_wave(Enemy** enemies, int wave_size, EntityArchetype type, Tower* tower, Allocator heap) {
+void init_enemies(Enemy** enemies, Allocator heap) {
+    for (int i = 0; i < MAX_ENEMIES; i++) {
+        enemies[i] = alloc(heap, sizeof(Enemy)); // Allocate memory for each Enemy
+        Entity* en = entity_create(); // Create a new Entity
+        en->arch = arch_enemy;
+        en->sprite_id = SPRITE_nil;
+        en->render_sprite = false;
+        en->pos.x = 0;
+        en->pos.y = 0;
+
+        // Assign the Entity to the Enemy and initialize Enemy fields
+        enemies[i]->entity = en;
+        enemies[i]->health = 0;
+        enemies[i]->dmg = 0;
+        enemies[i]->incoming_dmg = 0;
+    }
+}
+
+void create_enemy_wave(Enemy** enemies, int wave_size, EntityArchetype type, Tower* tower) {
 	float spawn_distance = 1.5; // Multiplier for the distance from the center
 
 	for (int i = 0; i < wave_size; i++) {
-		Entity* en = entity_create();
 		s64 ran = get_random_int_in_range(1, 42);
 		Vector2 direction;
 		float angle = (ran - 1) * (PI / 16); // Converts direction to radians (each quadrant is PI/4 rad apart)
@@ -145,7 +157,7 @@ void create_enemy_wave(Enemy** enemies, int wave_size, EntityArchetype type, Tow
 			tower->tower_center_pos.y + direction.y
 		);
 
-		enemies[i] = setup_enemy(en, SPRITE_enemy, spawn_position.x, spawn_position.y, heap);
+		setup_enemy(enemies[i], SPRITE_enemy, spawn_position.x, spawn_position.y);
 	}
 }
 
@@ -190,8 +202,8 @@ void enemy_damage_tower(Enemy* enemy, Tower* t) {
 	}
 }
 
-void enemy_attack(Enemy** enemies, Tower* t) {
-	for (int i = 0; i < MAX_ENEMIES; i++) {
+void enemy_attack(Enemy** enemies, Tower* t, int wave_size) {
+	for (int i = 0; i < wave_size; i++) {
 		if (enemies[i] && enemies[i]->entity->is_valid) {
 			if (enemies[i]->health > 0 && enemies[i]->entity->render_sprite) {
 				enemy_movement(enemies[i], t);
@@ -395,7 +407,10 @@ int entry(int argc, char **argv) {
 
 	// Create enemies
 	Enemy** enemies = alloc(heap, sizeof(Enemy*) * MAX_ENEMIES);
-	create_enemy_wave(enemies, MAX_ENEMIES, arch_enemy, tower, heap);
+	init_enemies(enemies, heap);
+
+	int wave_size = 20;
+	create_enemy_wave(enemies, wave_size, arch_enemy, tower);
 
 	// Game Loop
 	float64 last_time = os_get_current_time_in_seconds();
@@ -497,7 +512,7 @@ int entry(int argc, char **argv) {
 			}
 		}
 
-		enemy_attack(enemies, tower);
+		enemy_attack(enemies, tower, wave_size);
 		tower_attack(enemies, weapon);
 		
         // Game controll logic
