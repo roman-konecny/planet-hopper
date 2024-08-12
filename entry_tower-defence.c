@@ -228,7 +228,7 @@ Missile* setup_missile(Weapon* weapon, Allocator heap) {
 	missile->entity = missile_en;
 	missile->entity->render_sprite = false;
 	missile->entity->arch = arch_missile;
-	missile->entity->sprite_id = SPRITE_nil;
+	missile->entity->sprite_id = SPRITE_missile;
 	missile->weapon = weapon;
 	missile->target = NULL;
 	return missile;
@@ -244,7 +244,7 @@ Weapon* setup_weapon(Tower* t, Allocator heap) {
     Entity* weapon_en = entity_create();
 	Weapon* weapon = alloc(heap, sizeof(Weapon));
 	weapon->dmg = 1;
-	weapon->speed = 0.1;
+	weapon->speed = 0.03;
 	weapon->missile_limit = 3;
 	weapon->entity = weapon_en;
 	weapon->tower = t;
@@ -330,7 +330,6 @@ void send_missile(Weapon* weapon, Enemy* target) {
 			weapon->missiles[i]->target = target;
 			weapon->missiles[i]->entity->render_sprite = true;
 			target->incoming_dmg += weapon->dmg;
-			log("missile %d sent", i);
 			break;
 		}
 	}
@@ -348,7 +347,6 @@ void update_missiles(Weapon* weapon) {
 void tower_attack(Enemy** enemies, Weapon* weapon) {
 	Enemy* target = pick_target_in_range(enemies, weapon);
 	if (target) {
-		log("picked enemy position (%.2f, %.2f)", target->entity->pos.x, target->entity->pos.y);
 		send_missile(weapon, target);
 	}
 	update_missiles(weapon);
@@ -378,6 +376,7 @@ int entry(int argc, char **argv) {
 
 	sprites[SPRITE_tower] = (Sprite){ .image=load_image_from_disk(STR("pics/tower.png"), heap), .size=v2(100.0, 100.0) };
 	sprites[SPRITE_enemy] = (Sprite){ .image=load_image_from_disk(STR("pics/Enemies/enemy1.png"), heap), .size=v2(16.0, 16.0) };
+	sprites[SPRITE_missile] = (Sprite){ .image=load_image_from_disk(STR("pics/Missiles/rocket1.png"), heap), .size=v2(32.0, 32.0) };
 
 	// Setup player
     Tower* tower = setup_tower(heap);
@@ -463,7 +462,12 @@ int entry(int argc, char **argv) {
 					case (arch_missile):
 					{
 						if (en->render_sprite) {
-							draw_circle(en->pos, v2(3,3), COLOR_RED);
+							Sprite* sprite = get_sprite(en->sprite_id);
+							Matrix4 xform = m4_scalar(1.0);
+							xform         = m4_translate(xform, v3(en->pos.x, en->pos.y, 0));
+							xform		  = m4_rotate_z(xform, en->rotation);
+							xform         = m4_translate(xform, v3(-sprite->size.x / 2, -sprite->size.y / 2, 0));
+							draw_image_xform(sprite->image, xform, sprite->size, COLOR_WHITE);
 						}
 						break;
 					}
