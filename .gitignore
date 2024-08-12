@@ -35,6 +35,8 @@ settings.txt
 !proj/arcane/macos_glslc
 *TRACES/
 
+build/pics
+
 fetch.bat
 thing.bat
 *crash-*
