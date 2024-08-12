@@ -378,7 +378,7 @@ int entry(int argc, char **argv) {
 	window.clear_color = hex_to_rgba(0x000000ff);
 	float zoom = 1.1;
 
-	font = load_font_from_disk(STR("C:/windows/fonts/arial.ttf"), heap);
+	font = load_font_from_disk(STR("E:/Game-Towerdefense/planet-hopper/font/bedstead-boldextracondensed.otf"), heap);
 	assert(font, "Failed loading arial.ttf");
 
 	// Game Objects Creation
