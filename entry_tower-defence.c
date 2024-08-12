@@ -245,7 +245,7 @@ Weapon* setup_weapon(Tower* t, Allocator heap) {
 	Weapon* weapon = alloc(heap, sizeof(Weapon));
 	weapon->dmg = 1;
 	weapon->speed = 0.022;
-	weapon->missile_limit = 3;
+	weapon->missile_limit = 1;
 	weapon->entity = weapon_en;
 	weapon->tower = t;
 	weapon->missiles = alloc(heap, sizeof(Missile*) * weapon->missile_limit);
@@ -378,7 +378,7 @@ int entry(int argc, char **argv) {
 	window.clear_color = hex_to_rgba(0x000000ff);
 	float zoom = 1.1;
 
-	font = load_font_from_disk(STR("E:/Game-Towerdefense/planet-hopper/font/bedstead-boldextracondensed.otf"), heap);
+	font = load_font_from_disk(STR("C:/windows/fonts/arial.ttf"), heap);
 	assert(font, "Failed loading arial.ttf");
 
 	// Game Objects Creation
