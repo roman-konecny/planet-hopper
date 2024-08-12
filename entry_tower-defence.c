@@ -4,7 +4,7 @@
 
 // ENEMY SETUP
 #define MAX_ENEMIES 100 // Make sure you dont go over MAX_ENTITY_COUNT
-#define ENEMY_SPEED 0.008
+#define ENEMY_SPEED 0.01
 #define ENEMY_SPAWN_RATE 1
 #define SPAWN_SPEED 1000000000 // indirect effect - increase number to decrease speed etc.
 
@@ -61,7 +61,10 @@ typedef struct Enemy {
 	Entity* entity;
 	int health;
 	int dmg;
+	int incoming_dmg;
 } Enemy;
+
+typedef struct Missile Missile;
 
 typedef struct Weapon {
 	Entity* entity;
@@ -69,6 +72,8 @@ typedef struct Weapon {
 	Enemy* target;
 	int speed;
 	int dmg;
+	Missile** missiles;
+	int missile_limit;
 } Weapon;
 
 typedef struct Missile {
@@ -101,6 +106,107 @@ void entity_destroy(Entity* entity) {
 	memset(entity, 0, sizeof(Entity));
 }
 
+
+// ENEMIES START
+void enemy_destroy(Weapon* weapon, Enemy** enemies, Allocator heap) {
+    Enemy* enemy = weapon->target;
+	weapon->target = NULL;
+	enemy->entity->render_sprite = false;
+	enemy->dmg = 0;
+	enemy->health = 0;
+	enemy->incoming_dmg = 0;
+}
+
+Enemy* setup_enemy(Entity* en, SpriteID sprite, float pos_x, float pos_y, Allocator heap) {
+	en->arch = arch_enemy;
+	en->sprite_id = sprite;
+	en->render_sprite = false;
+	en->pos.x = pos_x;
+	en->pos.y = pos_y;
+	Enemy* enemy = alloc(heap, sizeof(Enemy));
+	enemy->entity = en;
+	enemy->health = 1;
+	enemy->dmg = 1;
+	return enemy;
+}
+
+void create_enemy_wave(Enemy** enemies, int wave_size, EntityArchetype type, Tower* tower, Allocator heap) {
+	float spawn_distance = 1.5; // Multiplier for the distance from the center
+
+	for (int i = 0; i < wave_size; i++) {
+		Entity* en = entity_create();
+		s64 ran = get_random_int_in_range(1, 42);
+		Vector2 direction;
+		float angle = (ran - 1) * (PI / 16); // Converts direction to radians (each quadrant is PI/4 rad apart)
+
+		// Calculate spawn position based on the angle and distance
+		direction.x = cos(angle) * tower->defence_size.x * spawn_distance;
+		direction.y = sin(angle) * tower->defence_size.y * spawn_distance;
+
+		Vector2 spawn_position = v2(
+			tower->tower_center_pos.x + direction.x,
+			tower->tower_center_pos.y + direction.y
+		);
+
+		enemies[i] = setup_enemy(en, SPRITE_enemy, spawn_position.x, spawn_position.y, heap);
+	}
+}
+
+void enemy_movement(Enemy* enemy, Tower* t) {
+    float step_size = ENEMY_SPEED;  // Define how fast the enemy moves towards the tower
+	// Compute the vector from the enemy to the tower center
+	Vector2 vector_to_tower;
+	vector_to_tower.x = t->tower_center_pos.x - enemy->entity->pos.x;
+	vector_to_tower.y = t->tower_center_pos.y - enemy->entity->pos.y;
+
+	// Calculate the distance to the tower center
+	float distance = sqrt(vector_to_tower.x * vector_to_tower.x + vector_to_tower.y * vector_to_tower.y);
+
+	// Normalize the vector
+	if (distance > 0) {
+		vector_to_tower.x /= distance;
+		vector_to_tower.y /= distance;
+		// Move the enemy towards the tower
+		enemy->entity->pos.x += vector_to_tower.x * step_size;
+		enemy->entity->pos.y += vector_to_tower.y * step_size;
+	} else {
+		enemy->entity->pos.x = t->tower_center_pos.x;
+		enemy->entity->pos.y = t->tower_center_pos.y;
+	}
+}
+
+
+bool is_enemy_touching_tower(Enemy* enemy, Tower* tower) {
+    // Calculate the horizontal and vertical distances between the center of the tower and the top-left corner of the enemy
+    float horizontal_distance = fabs((tower->tower_center_pos.x - enemy->entity->pos.x) - sprites[SPRITE_enemy].size.x / 2);
+    float vertical_distance = fabs((tower->tower_center_pos.y - enemy->entity->pos.y) - sprites[SPRITE_enemy].size.y / 2);
+
+    // Check if the horizontal and vertical distances are less than the half widths/heights added together
+    return horizontal_distance <= (sprites[SPRITE_tower].size.x / 2 + sprites[SPRITE_enemy].size.x / 2) &&
+           vertical_distance <= (sprites[SPRITE_tower].size.y / 2 + sprites[SPRITE_enemy].size.y / 2);
+}
+
+void enemy_damage_tower(Enemy* enemy, Tower* t) {
+	if(is_enemy_touching_tower(enemy, t)) {
+		t->health -= enemy->dmg; // if damaged once, no more dmg;
+		enemy->dmg = 0;
+	}
+}
+
+void enemy_attack(Enemy** enemies, Tower* t) {
+	for (int i = 0; i < MAX_ENEMIES; i++) {
+		if (enemies[i] && enemies[i]->entity->is_valid) {
+			if (enemies[i]->health > 0 && enemies[i]->entity->render_sprite) {
+				enemy_movement(enemies[i], t);
+				enemy_damage_tower(enemies[i], t);
+			}
+		}
+	}
+}
+// ENEMIES END
+
+
+// DEFENCE START
 Tower* setup_tower(Allocator heap) {
     Entity* tower_en = entity_create();
 	tower_en->arch = arch_tower;
@@ -119,75 +225,50 @@ Tower* setup_tower(Allocator heap) {
 	return tower;
 }
 
-Weapon* setup_weapon(Tower* t, Allocator heap) {
-    Entity* wepon_en = entity_create();
-	Weapon* weapon = alloc(heap, sizeof(Weapon));
-	weapon->dmg = 1;
-	return weapon;
-}
-
 Missile* setup_missile(Weapon* weapon, Allocator heap) {
     Entity* missile_en = entity_create();
 	Missile* missile = alloc(heap, sizeof(Missile));
 	missile->entity = missile_en;
+	missile->entity->render_sprite = false;
+	missile->entity->arch = arch_missile;
+	missile->entity->sprite_id = SPRITE_nil;
 	missile->weapon = weapon;
-	missile->target = weapon->target;
+	missile->target = NULL;
 	return missile;
 }
 
-void enemy_movement(Entity* enemy, Tower* t) {
-    float step_size = ENEMY_SPEED;  // Define how fast the enemy moves towards the tower
-	// Compute the vector from the enemy to the tower center
-		Vector2 vector_to_tower;
-		vector_to_tower.x = t->tower_center_pos.x - enemy->pos.x;
-		vector_to_tower.y = t->tower_center_pos.y - enemy->pos.y;
-
-		// Calculate the distance to the tower center
-		float distance = sqrt(vector_to_tower.x * vector_to_tower.x + vector_to_tower.y * vector_to_tower.y);
-
-		// Normalize the vector
-		if (distance > 0) {
-			vector_to_tower.x /= distance;
-			vector_to_tower.y /= distance;
-		}
-
-		// Move the enemy towards the tower
-		enemy->pos.x += vector_to_tower.x * step_size;
-		enemy->pos.y += vector_to_tower.y * step_size;
-}
-
-bool is_enemy_touching_tower(Entity* enemy, Tower* tower) {
-    // Calculate the horizontal and vertical distances between the center of the tower and the top-left corner of the enemy
-    float horizontal_distance = fabs((tower->tower_center_pos.x - enemy->pos.x) - sprites[SPRITE_enemy].size.x / 2);
-    float vertical_distance = fabs((tower->tower_center_pos.y - enemy->pos.y) - sprites[SPRITE_enemy].size.y / 2);
-
-    // Check if the horizontal and vertical distances are less than the half widths/heights added together
-    return horizontal_distance <= (sprites[SPRITE_tower].size.x / 2 + sprites[SPRITE_enemy].size.x / 2) &&
-           vertical_distance <= (sprites[SPRITE_tower].size.y / 2 + sprites[SPRITE_enemy].size.y / 2);
-}
-
-void enemy_damage_tower(Entity* enemy, Tower* t) {
-	if(is_enemy_touching_tower(enemy, t)) {
-		enemy->render_sprite = false;
-		t->health -= 1;
+void load_weapon(Weapon* w, Allocator heap) {
+	for (int i = 0; i < w->missile_limit; i++) {
+		w->missiles[i] = setup_missile(w, heap);
 	}
 }
 
-void enemy_attack(Enemy** enemies, Tower* t) {
-	for (int i = 0; i < MAX_ENEMIES; i++) {
-		if (enemies[i]->entity->render_sprite) {
-			enemy_movement(enemies[i]->entity, t);
-			enemy_damage_tower(enemies[i]->entity, t);
-		}
-	}
+Weapon* setup_weapon(Tower* t, Allocator heap) {
+    Entity* weapon_en = entity_create();
+	Weapon* weapon = alloc(heap, sizeof(Weapon));
+	weapon->dmg = 1;
+	weapon->speed = 1;
+	weapon->missile_limit = 3;
+	weapon->entity = weapon_en;
+	weapon->tower = t;
+	weapon->missiles = alloc(heap, sizeof(Missile*) * weapon->missile_limit);
+	load_weapon(weapon, heap);
+	return weapon;
 }
 
-bool is_enemy_within_defence_range(Entity* enemy, Tower* tower) {
-    // Calculate the center position of the enemy, assuming its position is the top-left corner
-    float enemy_center_x = enemy->pos.x + sprites[SPRITE_enemy].size.x / 2;
-    float enemy_center_y = enemy->pos.y + sprites[SPRITE_enemy].size.y / 2;
 
-    // Calculate the distance between the center of the tower and the center of the enemy
+void missile_destroy(Missile* missile) { // call before enemy_destroy
+	missile->entity->render_sprite = false;
+	missile->target = NULL;
+	missile->entity->pos = missile->weapon->tower->tower_center_pos;
+}
+
+bool is_enemy_within_defence_range(Enemy* enemy, Tower* tower) {
+    // // Calculate the center position of the enemy, assuming its position is the top-left corner
+    float enemy_center_x = enemy->entity->pos.x + sprites[SPRITE_enemy].size.x / 2;
+    float enemy_center_y = enemy->entity->pos.y + sprites[SPRITE_enemy].size.y / 2;
+
+    // // Calculate the distance between the center of the tower and the center of the enemy
     float dx = tower->tower_center_pos.x - enemy_center_x;
     float dy = tower->tower_center_pos.y - enemy_center_y;
     float distance = sqrt(dx * dx + dy * dy);
@@ -200,16 +281,17 @@ bool is_enemy_within_defence_range(Entity* enemy, Tower* tower) {
 }
 
 Enemy* pick_target_in_range(Enemy** enemies, Weapon* weapon) {
-	for (int i = 0; i < MAX_ENEMIES; i++) {
-		if (enemies[i]->entity->render_sprite) {
-			if (is_enemy_within_defence_range(enemies[i])) {
-				return enemies[i];
-			}
-		}
-	}
+    for (int i = 0; i < MAX_ENEMIES; i++) {
+        if (enemies[i] != NULL && enemies[i]->entity->render_sprite) {
+            if (is_enemy_within_defence_range(enemies[i], weapon->tower) && enemies[i]->incoming_dmg < enemies[i]->health) {
+                return enemies[i];
+            }
+        }
+    }
+    return NULL;
 }
 
-bool move_missile_and_destroy(Weapon* weapon, Missile* missile) {
+void move_missile_and_destroy(Weapon* weapon, Missile* missile, Enemy** enemies, Allocator heap) {
 	// Calculate direction vector towards the target
     Vector2 target_center = {
         weapon->target->entity->pos.x + sprites[weapon->target->entity->sprite_id].size.x / 2,
@@ -224,7 +306,7 @@ bool move_missile_and_destroy(Weapon* weapon, Missile* missile) {
     // Normalize the direction vector
     float distance = sqrt(direction.x * direction.x + direction.y * direction.y);
     if (distance == 0) {
-        return;  // The missile is already at the target (prevent division by zero)
+        distance = -0.1;
     }
 
     direction.x /= distance;
@@ -234,48 +316,53 @@ bool move_missile_and_destroy(Weapon* weapon, Missile* missile) {
     missile->entity->pos.x += direction.x * weapon->speed;
     missile->entity->pos.y += direction.y * weapon->speed;
 
-    // Check if missile has reached the target by comparing the updated distance
     if (distance < weapon->speed) {
-        // Assume collision if the missile travels within 'speed' units of the target
-        weapon->target->health -= weapon->dmg;  // Apply damage to the target
-		if (weapon->target->health <= 0) {
-			weapon->target->entity->render_sprite = false;
-			entity_destroy(weapon->target);
-			entity_destroy(missile);
-			weapon->target = NULL;
-			return true;
-		}
+        weapon->target->health -= weapon->dmg;
+        weapon->target->incoming_dmg -= weapon->dmg;  // Decrement incoming damage as this missile hits
+
+        if (weapon->target->health <= 0) {
+			missile_destroy(missile);
+            enemy_destroy(weapon, enemies, heap);
+        }
+
     }
-	return false;
 }
 
-Missile* send_missile(Weapon* weapon, Allocator heap) {
-	Missile* missile = setup_missile(weapon, heap);
-	if (weapon->target != NULL) {
-        missile->entity->pos = tower->tower_center_pos;  // Start missile from tower center
+void send_missile(Weapon* weapon, Allocator heap) {
+	for (int i = 0; i < weapon->missile_limit; i++) {
+		if (weapon->missiles[i]->target == NULL) {
+			weapon->missiles[i]->target = weapon->target;
+			weapon->missiles[i]->entity->render_sprite = true;
+			weapon->target->incoming_dmg += weapon->dmg;
+			log("missile %d sent", i);
+			break;
+		}
+	}
+}
+
+void update_missiles(Weapon* weapon, Enemy** enemies, Allocator heap) {
+    for (int i = 0; i < weapon->missile_limit; i++) {
+        Missile* missile = weapon->missiles[i];
+        if (missile->target != NULL && missile->entity->render_sprite == true) {
+            move_missile_and_destroy(missile->weapon, missile, enemies, heap);
+        }
     }
-	
 }
 
 void tower_attack(Enemy** enemies, Weapon* weapon, Allocator heap) {
-	Missile* missiles[MAX_ENEMIES] = NULL;
-	if (!weapon->target) {
-		Enemy* target = pick_target_in_range(enemies, weapon);
-		send_missile(weapon, target, heap);
-	} // TODO nejak vedet jake smazat, at se nam nezahlti svet
+	Enemy* target = pick_target_in_range(enemies, weapon);
+	if (target) {
+		log("picked enemy position (%.2f, %.2f)", target->entity->pos.x, target->entity->pos.y);
+		weapon->target = target;
+		send_missile(weapon, heap);
+	}
+	if (weapon->target != NULL) {
+    	update_missiles(weapon, enemies, heap);
+	}
+	return;
 }
+// DEFENCE END
 
-Enemy* setup_enemy(Entity* en, SpriteID sprite, float pos_x, float pos_y, Allocator heap) {
-	en->arch = arch_enemy;
-	en->sprite_id = sprite;
-	en->pos.x = pos_x;
-	en->pos.y = pos_y;
-	Enemy* enemy = alloc(heap, sizeof(Enemy));
-	enemy->entity = en;
-	enemy->health = 1;
-	enemy->dmg = 1;
-	return enemy;
-}
 
 int entry(int argc, char **argv) {
 
@@ -299,30 +386,14 @@ int entry(int argc, char **argv) {
 
 	sprites[SPRITE_tower] = (Sprite){ .image=load_image_from_disk(STR("pics/tower.png"), heap), .size=v2(100.0, 100.0) };
 	sprites[SPRITE_enemy] = (Sprite){ .image=load_image_from_disk(STR("pics/Enemies/enemy1.png"), heap), .size=v2(16.0, 16.0) };
+
+	// Setup player
     Tower* tower = setup_tower(heap);
 	Weapon* weapon = setup_weapon(tower, heap);
 
 	// Create enemies
-	Enemy* enemies[MAX_ENEMIES];
-	float spawn_distance = 2.0; // Multiplier for the distance from the center
-
-	for (int i = 0; i < MAX_ENEMIES; i++) {
-		Entity* en = entity_create();
-		s64 ran = get_random_int_in_range(1, 42);
-		Vector2 direction;
-		float angle = (ran - 1) * (PI / 16); // Converts direction to radians (each quadrant is PI/4 rad apart)
-
-		// Calculate spawn position based on the angle and distance
-		direction.x = cos(angle) * tower->defence_size.x * spawn_distance;
-		direction.y = sin(angle) * tower->defence_size.y * spawn_distance;
-
-		Vector2 spawn_position = v2(
-			tower->tower_center_pos.x + direction.x,
-			tower->tower_center_pos.y + direction.y
-		);
-
-		enemies[i] = setup_enemy(en, SPRITE_enemy, spawn_position.x, spawn_position.y, heap);
-	}
+	Enemy** enemies = alloc(heap, sizeof(Enemy*) * MAX_ENEMIES);
+	create_enemy_wave(enemies, MAX_ENEMIES, arch_enemy, tower, heap);
 
 	// Game Loop
 	float64 last_time = os_get_current_time_in_seconds();
@@ -354,8 +425,9 @@ int entry(int argc, char **argv) {
 		last_time = now;
 
 		// :render
+
 		// health count
-		draw_text(font, tprint("Tower Health: %d", tower->health), FONT_HEIGHT, v2(100, 100), v2(1, 1), COLOR_WHITE);
+		draw_text(font, tprint("Tower Health: %d", tower->health), 12, v2(200, 200), v2(1, 1), COLOR_WHITE);
 		// entities
 		for (int i = 0; i < MAX_ENTITY_COUNT; i++) {
 			Entity* en = &world->entities[i];
@@ -396,17 +468,14 @@ int entry(int argc, char **argv) {
 						break;
 					}
 
-					case (arch_missile):
-					{
-						if ()
-						break;
-					}
 					default:
 					{
 						Sprite* sprite = get_sprite(en->sprite_id);
-						Matrix4 xform = m4_scalar(1.0);
-						xform         = m4_translate(xform, v3(en->pos.x, en->pos.y, 0));
-						draw_image_xform(sprite->image, xform, sprite->size, COLOR_WHITE);
+						if (sprite != SPRITE_nil) {
+							Matrix4 xform = m4_scalar(1.0);
+							xform         = m4_translate(xform, v3(en->pos.x, en->pos.y, 0));
+							draw_image_xform(sprite->image, xform, sprite->size, COLOR_WHITE);
+						}
 						break;
 					}
 				}
@@ -415,7 +484,7 @@ int entry(int argc, char **argv) {
 		}
 
 		enemy_attack(enemies, tower);
-		tower_attack(enemies, weapon);
+		tower_attack(enemies, weapon, heap);
 		
         // Game controll logic
 		if (is_key_just_pressed(KEY_ESCAPE)) {
