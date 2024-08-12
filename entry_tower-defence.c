@@ -69,8 +69,7 @@ typedef struct Missile Missile;
 typedef struct Weapon {
 	Entity* entity;
 	Tower* tower;
-	Enemy* target;
-	int speed;
+	float speed;
 	int dmg;
 	Missile** missiles;
 	int missile_limit;
@@ -108,13 +107,11 @@ void entity_destroy(Entity* entity) {
 
 
 // ENEMIES START
-void enemy_destroy(Weapon* weapon, Enemy** enemies, Allocator heap) {
-    Enemy* enemy = weapon->target;
-	weapon->target = NULL;
-	enemy->entity->render_sprite = false;
-	enemy->dmg = 0;
-	enemy->health = 0;
-	enemy->incoming_dmg = 0;
+void enemy_destroy(Missile* missile) {
+    missile->target->entity->render_sprite = false;
+    missile->target->health = 0;
+    missile->target->incoming_dmg = 0;
+	missile->target = NULL;
 }
 
 Enemy* setup_enemy(Entity* en, SpriteID sprite, float pos_x, float pos_y, Allocator heap) {
@@ -247,7 +244,7 @@ Weapon* setup_weapon(Tower* t, Allocator heap) {
     Entity* weapon_en = entity_create();
 	Weapon* weapon = alloc(heap, sizeof(Weapon));
 	weapon->dmg = 1;
-	weapon->speed = 1;
+	weapon->speed = 0.1;
 	weapon->missile_limit = 3;
 	weapon->entity = weapon_en;
 	weapon->tower = t;
@@ -257,9 +254,8 @@ Weapon* setup_weapon(Tower* t, Allocator heap) {
 }
 
 
-void missile_destroy(Missile* missile) { // call before enemy_destroy
+void missile_destroy(Missile* missile) {
 	missile->entity->render_sprite = false;
-	missile->target = NULL;
 	missile->entity->pos = missile->weapon->tower->tower_center_pos;
 }
 
@@ -291,11 +287,11 @@ Enemy* pick_target_in_range(Enemy** enemies, Weapon* weapon) {
     return NULL;
 }
 
-void move_missile_and_destroy(Weapon* weapon, Missile* missile, Enemy** enemies, Allocator heap) {
+void move_missile_and_destroy(Missile* missile) {
 	// Calculate direction vector towards the target
     Vector2 target_center = {
-        weapon->target->entity->pos.x + sprites[weapon->target->entity->sprite_id].size.x / 2,
-        weapon->target->entity->pos.y + sprites[weapon->target->entity->sprite_id].size.y / 2
+        missile->target->entity->pos.x + sprites[missile->target->entity->sprite_id].size.x / 2,
+        missile->target->entity->pos.y + sprites[missile->target->entity->sprite_id].size.y / 2
     };
 
     Vector2 direction = {
@@ -306,60 +302,56 @@ void move_missile_and_destroy(Weapon* weapon, Missile* missile, Enemy** enemies,
     // Normalize the direction vector
     float distance = sqrt(direction.x * direction.x + direction.y * direction.y);
     if (distance == 0) {
-        distance = -0.1;
+        distance = 0.1;
     }
 
     direction.x /= distance;
     direction.y /= distance;
 
     // Update missile position
-    missile->entity->pos.x += direction.x * weapon->speed;
-    missile->entity->pos.y += direction.y * weapon->speed;
+    missile->entity->pos.x += direction.x * missile->weapon->speed;
+    missile->entity->pos.y += direction.y * missile->weapon->speed;
 
-    if (distance < weapon->speed) {
-        weapon->target->health -= weapon->dmg;
-        weapon->target->incoming_dmg -= weapon->dmg;  // Decrement incoming damage as this missile hits
+    if (distance < missile->weapon->speed) {
+        missile->target->health -= missile->weapon->dmg;
+        missile->target->incoming_dmg -= missile->weapon->dmg;  // Decrement incoming damage as this missile hits
 
-        if (weapon->target->health <= 0) {
+        if (missile->target->health <= 0) {
 			missile_destroy(missile);
-            enemy_destroy(weapon, enemies, heap);
+            enemy_destroy(missile);
         }
 
     }
 }
 
-void send_missile(Weapon* weapon, Allocator heap) {
+void send_missile(Weapon* weapon, Enemy* target) {
 	for (int i = 0; i < weapon->missile_limit; i++) {
 		if (weapon->missiles[i]->target == NULL) {
-			weapon->missiles[i]->target = weapon->target;
+			weapon->missiles[i]->target = target;
 			weapon->missiles[i]->entity->render_sprite = true;
-			weapon->target->incoming_dmg += weapon->dmg;
+			target->incoming_dmg += weapon->dmg;
 			log("missile %d sent", i);
 			break;
 		}
 	}
 }
 
-void update_missiles(Weapon* weapon, Enemy** enemies, Allocator heap) {
+void update_missiles(Weapon* weapon) {
     for (int i = 0; i < weapon->missile_limit; i++) {
         Missile* missile = weapon->missiles[i];
         if (missile->target != NULL && missile->entity->render_sprite == true) {
-            move_missile_and_destroy(missile->weapon, missile, enemies, heap);
+            move_missile_and_destroy(missile);
         }
     }
 }
 
-void tower_attack(Enemy** enemies, Weapon* weapon, Allocator heap) {
+void tower_attack(Enemy** enemies, Weapon* weapon) {
 	Enemy* target = pick_target_in_range(enemies, weapon);
 	if (target) {
 		log("picked enemy position (%.2f, %.2f)", target->entity->pos.x, target->entity->pos.y);
-		weapon->target = target;
-		send_missile(weapon, heap);
+		send_missile(weapon, target);
 	}
-	if (weapon->target != NULL) {
-    	update_missiles(weapon, enemies, heap);
-	}
-	return;
+	update_missiles(weapon);
 }
 // DEFENCE END
 
@@ -468,6 +460,13 @@ int entry(int argc, char **argv) {
 						break;
 					}
 
+					case (arch_missile):
+					{
+						if (en->render_sprite) {
+							draw_circle(en->pos, v2(3,3), COLOR_RED);
+						}
+						break;
+					}
 					default:
 					{
 						Sprite* sprite = get_sprite(en->sprite_id);
@@ -484,7 +483,7 @@ int entry(int argc, char **argv) {
 		}
 
 		enemy_attack(enemies, tower);
-		tower_attack(enemies, weapon, heap);
+		tower_attack(enemies, weapon);
 		
         // Game controll logic
 		if (is_key_just_pressed(KEY_ESCAPE)) {
