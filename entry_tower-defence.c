@@ -244,7 +244,7 @@ Weapon* setup_weapon(Tower* t, Allocator heap) {
     Entity* weapon_en = entity_create();
 	Weapon* weapon = alloc(heap, sizeof(Weapon));
 	weapon->dmg = 1;
-	weapon->speed = 0.03;
+	weapon->speed = 0.022;
 	weapon->missile_limit = 3;
 	weapon->entity = weapon_en;
 	weapon->tower = t;
@@ -324,12 +324,23 @@ void move_missile_and_destroy(Missile* missile) {
     }
 }
 
+void update_missile_rotation(Missile* missile) {
+	float deltaX = missile->target->entity->pos.x - missile->entity->pos.x;
+    float deltaY = missile->target->entity->pos.y - missile->entity->pos.y;
+
+    // Calculate the angle in radians
+    float angle = atan2(deltaX, deltaY);
+
+	missile->entity->rotation = angle;
+}
+
 void send_missile(Weapon* weapon, Enemy* target) {
 	for (int i = 0; i < weapon->missile_limit; i++) {
 		if (weapon->missiles[i]->target == NULL) {
 			weapon->missiles[i]->target = target;
 			weapon->missiles[i]->entity->render_sprite = true;
 			target->incoming_dmg += weapon->dmg;
+			update_missile_rotation(weapon->missiles[i]);
 			break;
 		}
 	}
