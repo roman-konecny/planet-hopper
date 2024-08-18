@@ -10,11 +10,9 @@ size = Vector2(74, 79)
 script = ExtResource("1_84611")
 
 [node name="TowerBox" type="CollisionShape2D" parent="."]
-position = Vector2(240, 357.5)
 shape = SubResource("RectangleShape2D_qxagb")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(240, 360)
 scale = Vector2(0.2, 0.2)
 texture = ExtResource("2_fnpkc")
 

@@ -15,6 +15,7 @@ func _process(delta: float) -> void:
 func apply_damage():
 	for enemy in get_tree().get_nodes_in_group("damaging_tower"):
 		health -= enemy.damage  # Subtract enemy's damage from tower's health
+		print(health)
 		if health <= 0:
 			die()  # Handle the tower's destruction when health reaches 0
 
