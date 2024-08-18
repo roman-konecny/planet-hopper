@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3 uid="uid://clh5u2jxrkvbe"]
+
+[ext_resource type="Script" path="res://tower_scene.gd" id="1_84611"]
+[ext_resource type="Texture2D" uid="uid://m6x1ttg7tf4q" path="res://art/tower.png" id="2_fnpkc"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qxagb"]
+size = Vector2(74, 79)
+
+[node name="TowerScene" type="Area2D"]
+script = ExtResource("1_84611")
+
+[node name="TowerBox" type="CollisionShape2D" parent="."]
+position = Vector2(240, 357.5)
+shape = SubResource("RectangleShape2D_qxagb")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(240, 360)
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("2_fnpkc")
+
+[node name="DamageTimer" type="Timer" parent="."]
+autostart = true
+
+[connection signal="timeout" from="DamageTimer" to="." method="_on_damage_timer_timeout"]

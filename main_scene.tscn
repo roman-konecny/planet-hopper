@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://c4wlg6fu8osnp"]
+
+[ext_resource type="PackedScene" uid="uid://clh5u2jxrkvbe" path="res://tower_scene.tscn" id="1_hiend"]
+[ext_resource type="PackedScene" uid="uid://d2ulbsp621yio" path="res://enemy_scene.tscn" id="2_7ux0y"]
+
+[node name="MainScene" type="Node"]
+
+[node name="TowerScene" parent="." instance=ExtResource("1_hiend")]
+
+[node name="EnemyScene" parent="." instance=ExtResource("2_7ux0y")]
+position = Vector2(393, 667)
+
+[connection signal="body_entered" from="TowerScene" to="TowerScene" method="_on_body_entered"]
