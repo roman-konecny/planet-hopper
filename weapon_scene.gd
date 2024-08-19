@@ -1,8 +1,8 @@
 extends Node2D
 
 @export var projectile_scene: PackedScene  # The projectile scene this weapon will shoot
-@export var attack_speed: float = 0.5  # Time between shots
-@export var num_projectiles: int = 2  # Number of projectiles shot at once
+@export var attack_speed: float = 0.1  # Time between shots
+@export var num_projectiles: int = 5  # Number of projectiles shot at once
 @export var projectile_speed: float = 200.0  # Speed of the projectiles
 @export var damage: int = 5  # Damage of the projectiles
 

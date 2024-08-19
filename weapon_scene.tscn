@@ -1,16 +1,11 @@
-[gd_scene load_steps=4 format=3 uid="uid://bfdrewvkmq4hu"]
+[gd_scene load_steps=3 format=3 uid="uid://bfdrewvkmq4hu"]
 
 [ext_resource type="Script" path="res://weapon_scene.gd" id="1_cnqlv"]
-[ext_resource type="Texture2D" uid="uid://d31s8f3wqvmap" path="res://icon.svg" id="1_lo7n8"]
 [ext_resource type="PackedScene" uid="uid://nwhoq2r0rpl3" path="res://projectile.tscn" id="2_xn65e"]
 
 [node name="WeaponScene" type="Node2D"]
 script = ExtResource("1_cnqlv")
 projectile_scene = ExtResource("2_xn65e")
-
-[node name="Sprite2D" type="Sprite2D" parent="."]
-scale = Vector2(0.2, 0.174)
-texture = ExtResource("1_lo7n8")
 
 [node name="FireRate" type="Timer" parent="."]
 wait_time = 0.7
