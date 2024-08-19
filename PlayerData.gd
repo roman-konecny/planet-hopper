@@ -4,12 +4,10 @@ extends Node
 var player_essence: int = 0
 var player_gold: int = 0
 var player_diamonds: int = 0
-var esence_rate: int = 10
 var weapon_upgrades: Dictionary = {
 	"weapon_slots_unlocked": 1, # max 4
 }
 var tower_upgrades: Dictionary = {
-	"essence_rate": 10,
 	"defence_radius_increase": 0,
 }
 

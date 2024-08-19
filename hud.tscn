@@ -52,5 +52,19 @@ offset_top = 43.0
 offset_right = 383.0
 offset_bottom = 66.0
 
+[node name="WaveCount" type="Label" parent="."]
+offset_left = 24.0
+offset_top = 60.0
+offset_right = 64.0
+offset_bottom = 83.0
+
+[node name="NextWave" type="Button" parent="."]
+offset_left = 20.0
+offset_top = 93.0
+offset_right = 112.0
+offset_bottom = 124.0
+text = "Next Wave"
+
 [connection signal="pressed" from="StartButton" to="." method="_on_start_button_pressed"]
 [connection signal="pressed" from="RestartButton" to="." method="_on_restart_button_pressed"]
+[connection signal="pressed" from="NextWave" to="." method="_on_next_wave_pressed"]

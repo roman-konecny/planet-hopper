@@ -6,7 +6,7 @@ extends Area2D
 var direction: Vector2 = Vector2.ZERO  # Direction of movement
 
 func _ready() -> void:
-	PlayerData.player_essence -= 1
+	pass
 
 # Set the direction of the projectile
 func set_direction(new_direction: Vector2) -> void:

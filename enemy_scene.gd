@@ -1,8 +1,7 @@
 extends Area2D
 
-@export var health: int = 20
-@export var incoming_dmg: int = 0
-@export var damage: int = 10
+@export var health: int = 1 * GameConfig.enemy_health_damage_multiplier
+@export var damage: int = 1 * GameConfig.enemy_health_damage_multiplier
 @export var speed: float = 100.0
 var direction: Vector2 = Vector2.ZERO  # Initialize direction as a zero vector
 
@@ -12,7 +11,7 @@ func _process(delta: float) -> void:
 	if direction != Vector2.ZERO:
 		global_position += direction * speed * delta
 	if health <= 0:
-		PlayerData.player_essence += 5
+		PlayerData.player_essence += GameConfig.reward_per_enemy
 		queue_free()
 
 # Method to set the direction of the enemy

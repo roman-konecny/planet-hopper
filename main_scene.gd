@@ -9,6 +9,7 @@ func _ready() -> void:
 	# Connect HUD signals
 	hud.connect("start_game", Callable(self, "_on_start_game"))
 	hud.connect("restart_game", Callable(self, "_on_restart_game"))
+	hud.connect("next_wave", Callable(self, "_on_next_wave"))
 	
 	# Initially, stop the game logic
 	set_process(false)
@@ -20,7 +21,8 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	# Update HUD with current health
 	hud.update_health(tower.health)
-	hud.update_essence(PlayerData.player_essence, PlayerData.esence_rate)
+	hud.update_essence(PlayerData.player_essence)
+	hud.update_wave_count()
 
 	# Check for game over condition
 	if tower.health <= 1:
@@ -32,7 +34,6 @@ func _on_start_game() -> void:
 	set_process(true)
 	
 	# Initialize or reset any game variables
-	tower.health = 100
 	hud.update_health(tower.health)
 	
 	# Start the enemy timer
@@ -56,34 +57,37 @@ func _on_restart_game() -> void:
 
 # Start spawning enemies after the start timer times out
 func _on_start_timer_timeout() -> void:
+	$EnemyTimer.wait_time = GameConfig.get_enemy_spawn_rate()
 	$EnemyTimer.start()  # Start the enemy spawn timer
-	$EssenceTimer.start()
+
+func _on_next_wave() -> void:
+	GameConfig.set_next_wave()
+	$EnemyTimer.wait_time = GameConfig.get_enemy_spawn_rate()
+	$EnemyTimer.start()  # Start the enemy spawn timer
 
 # Spawn an enemy at random locations along a path
 func _on_enemy_timer_timeout() -> void:
 	if not tower:
 		return
-	
+	if (GameConfig.enemy_wave_size == 0):
+		$EnemyTimer.stop()
+		hud.show_next_wave()
+		return
 	var enemy = enemy_scene.instantiate()  # Create a new enemy instance
-	
 	# Choose a random location on the EnemyPath
 	var enemy_spawn_location = get_node("EnemyPath/EnemySpawnLocation")
 	enemy_spawn_location.progress = randi()  # Randomize spawn location along the path
-	
 	# Set the enemy's position to the chosen spawn location
 	enemy.position = enemy_spawn_location.position
-	
 	# Calculate the direction from the enemy to the tower
 	var direction_to_tower = (tower.global_position - enemy.global_position).normalized()
-	
 	# Pass the direction to the enemy instance using the set_direction method
 	enemy.set_direction(direction_to_tower)
-	
 	# Add the enemy to the scene
 	add_child(enemy)
-	
 	# Optionally add the enemy to the "enemies" group for easy management
 	enemy.add_to_group("enemies")
+	GameConfig.enemy_wave_size -= 1
 
 # Function to handle game over logic
 func _on_game_over() -> void:
@@ -92,7 +96,6 @@ func _on_game_over() -> void:
 	
 	# Stop enemy spawning
 	$EnemyTimer.stop()
-	$EssenceTimer.stop()
 	
 	# Show the game over screen
 	hud.show_game_over()
@@ -106,7 +109,3 @@ func reset_game() -> void:
 	# Clear or reset the enemies and any other game state elements
 	get_tree().call_group("enemies", "queue_free")
 	# Reset other necessary elements for a new game state
-
-
-func _on_esence_timer_timeout() -> void:
-	PlayerData.player_essence += PlayerData.tower_upgrades.get("essence_rate")
