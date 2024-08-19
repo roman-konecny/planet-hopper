@@ -20,9 +20,10 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	# Update HUD with current health
 	hud.update_health(tower.health)
+	hud.update_essence(PlayerData.player_essence, PlayerData.esence_rate)
 
 	# Check for game over condition
-	if tower.health <= 0:
+	if tower.health <= 1:
 		_on_game_over()
 
 # Function to handle the start of the game
@@ -56,6 +57,7 @@ func _on_restart_game() -> void:
 # Start spawning enemies after the start timer times out
 func _on_start_timer_timeout() -> void:
 	$EnemyTimer.start()  # Start the enemy spawn timer
+	$EssenceTimer.start()
 
 # Spawn an enemy at random locations along a path
 func _on_enemy_timer_timeout() -> void:
@@ -90,9 +92,11 @@ func _on_game_over() -> void:
 	
 	# Stop enemy spawning
 	$EnemyTimer.stop()
+	$EssenceTimer.stop()
 	
 	# Show the game over screen
 	hud.show_game_over()
+	PlayerData.save_data()
 
 	# Optionally, remove or reset enemies
 	reset_game()
@@ -102,3 +106,7 @@ func reset_game() -> void:
 	# Clear or reset the enemies and any other game state elements
 	get_tree().call_group("enemies", "queue_free")
 	# Reset other necessary elements for a new game state
+
+
+func _on_esence_timer_timeout() -> void:
+	PlayerData.player_essence += PlayerData.tower_upgrades.get("essence_rate")

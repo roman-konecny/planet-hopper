@@ -4,8 +4,14 @@ extends Node
 var player_essence: int = 0
 var player_gold: int = 0
 var player_diamonds: int = 0
-var unlocked_weapons: Array = []
-var tower_upgrades: Dictionary = {}
+var esence_rate: int = 10
+var weapon_upgrades: Dictionary = {
+	"weapon_slots_unlocked": 1, # max 4
+}
+var tower_upgrades: Dictionary = {
+	"essence_rate": 10,
+	"defence_radius_increase": 0,
+}
 
 # Path to the save file
 var save_path: String = "user://savegame.cfg"
@@ -20,7 +26,7 @@ func save_data() -> void:
 	config.set_value("Player", "essence", player_essence)
 	config.set_value("Player", "gold", player_gold)
 	config.set_value("Player", "diamonds", player_diamonds)
-	config.set_value("Player", "unlocked_weapons", unlocked_weapons)
+	config.set_value("Player", "weapon_upgrades", weapon_upgrades)
 	config.set_value("Player", "tower_upgrades", tower_upgrades)
 	
 	var err = config.save(save_path)
@@ -36,7 +42,7 @@ func load_data() -> void:
 		player_essence = config.get_value("Player", "essence", 100)
 		player_gold = config.get_value("Player", "gold", 0)
 		player_diamonds = config.get_value("Player", "diamonds", 0)
-		unlocked_weapons = config.get_value("Player", "unlocked_weapons", [])
+		weapon_upgrades = config.get_value("Player", "weapon_upgrades", [])
 		tower_upgrades = config.get_value("Player", "tower_upgrades", {})
 		print("Game data loaded successfully")
 	else:
@@ -47,6 +53,6 @@ func reset_data() -> void:
 	player_essence = 100
 	player_gold = 0
 	player_diamonds = 0
-	unlocked_weapons.clear()
+	weapon_upgrades.clear()
 	tower_upgrades.clear()
 	save_data()  # Save the reset data

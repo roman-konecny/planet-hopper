@@ -17,7 +17,7 @@ wait_time = 0.7
 autostart = true
 
 [node name="CheckForEnemy" type="Timer" parent="."]
-wait_time = 0.01
+wait_time = 0.05
 autostart = true
 
 [connection signal="timeout" from="FireRate" to="." method="_on_fire_rate_timeout"]

@@ -32,3 +32,6 @@ func show_game_over() -> void:
 # Optional function to update the health or score display
 func update_health(health: int) -> void:
 	$HealthLabel.text = "Health: %d" % health
+
+func update_essence(essence: int, rate: int) -> void:
+	$Essence.text = "E: %d" % essence + " | +%d/s" % rate
