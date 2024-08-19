@@ -18,6 +18,8 @@ func _on_start_timer_timeout() -> void:
 
 # Spawn an enemy at random locations along a path
 func _on_enemy_timer_timeout() -> void:
+	if (not tower):
+		return
 	var enemy = enemy_scene.instantiate()  # Create a new enemy instance
 	
 	# Choose a random location on the EnemyPath
@@ -28,7 +30,6 @@ func _on_enemy_timer_timeout() -> void:
 	enemy.position = enemy_spawn_location.position
 	
 	# Calculate the direction from the enemy to the tower
-	print(tower.global_position)
 	var direction_to_tower = (tower.global_position - enemy.global_position).normalized()
 	
 	# Pass the direction to the enemy instance using the set_direction method

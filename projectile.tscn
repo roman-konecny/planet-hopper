@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://nwhoq2r0rpl3"]
+
+[ext_resource type="Texture2D" uid="uid://b8orgyj5edi3" path="res://art/missiles/rocket1.png" id="1_hvh6u"]
+[ext_resource type="Script" path="res://projectile.gd" id="1_kk3us"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qsry8"]
+size = Vector2(14, 20)
+
+[node name="Projectile" type="Area2D"]
+script = ExtResource("1_kk3us")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_hvh6u")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -6)
+shape = SubResource("RectangleShape2D_qsry8")
+
+[connection signal="area_entered" from="." to="." method="_on_enemy_hit"]

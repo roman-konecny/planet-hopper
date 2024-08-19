@@ -3,13 +3,42 @@ extends Area2D
 @export var health: int = 100
 @export var defence_radius: float = 100.0
 @export var weapon_slots: Array = []
+@export var weapons_cnt: int = 2
+@export var weapon_scene: PackedScene
+
+# Draw the defense radius for visualization
+func _draw() -> void:
+	draw_circle(Vector2.ZERO, defence_radius, Color(1, 0, 0, 0.2))  # Draw a semi-transparent red circle
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass # Replace with function body.
+	for i in range(weapons_cnt):
+		var new_weapon = weapon_scene.instantiate()
+		if (i == 0):
+			new_weapon.position = $WeaponSlot1.position
+		elif (i == 1):
+			new_weapon.position = $WeaponSlot2.position
+		elif (i == 2):
+			new_weapon.position = $WeaponSlot3.position
+		elif (i == 3):
+			new_weapon.position = $WeaponSlot4.position
+		weapon_slots.append(new_weapon)
+		add_child(new_weapon)
+
+# Check for enemies within the defense radius
+func check_enemies_in_range() -> Array:
+	var enemies_in_range = []
+	for enemy in get_tree().get_nodes_in_group("enemies"):
+		if global_position.distance_to(enemy.global_position) <= defence_radius:
+			enemies_in_range.append(enemy)
+	return enemies_in_range
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	pass
+	var enemies_in_range = check_enemies_in_range()
+	for weapon in weapon_slots:
+		if enemies_in_range.size() > 0:
+			weapon.target = enemies_in_range[0]
 
 # Function to apply damage from enemies
 func apply_damage():
