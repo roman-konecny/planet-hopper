@@ -1,0 +1,39 @@
+[gd_scene load_steps=2 format=3 uid="uid://bqh6mlrej1uii"]
+
+[ext_resource type="Script" path="res://hud.gd" id="1_l35cb"]
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("1_l35cb")
+
+[node name="StartButton" type="Button" parent="."]
+offset_left = 186.0
+offset_top = 188.0
+offset_right = 282.0
+offset_bottom = 219.0
+text = "Start Game"
+
+[node name="GameOverLabel" type="Label" parent="."]
+visible = false
+offset_left = 190.0
+offset_top = 153.0
+offset_right = 277.0
+offset_bottom = 176.0
+text = "Game Over"
+
+[node name="RestartButton" type="Button" parent="."]
+visible = false
+offset_left = 208.0
+offset_top = 109.0
+offset_right = 259.0
+offset_bottom = 140.0
+text = "Reset"
+
+[node name="HealthLabel" type="Label" parent="."]
+offset_left = 358.0
+offset_top = 26.0
+offset_right = 410.0
+offset_bottom = 49.0
+text = "Health:"
+
+[connection signal="pressed" from="StartButton" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="RestartButton" to="." method="_on_restart_button_pressed"]

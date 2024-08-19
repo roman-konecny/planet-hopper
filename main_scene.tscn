@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://c4wlg6fu8osnp"]
+[gd_scene load_steps=6 format=3 uid="uid://c4wlg6fu8osnp"]
 
 [ext_resource type="PackedScene" uid="uid://clh5u2jxrkvbe" path="res://tower_scene.tscn" id="1_hiend"]
 [ext_resource type="Script" path="res://main_scene.gd" id="1_te228"]
 [ext_resource type="PackedScene" uid="uid://d2ulbsp621yio" path="res://enemy_scene.tscn" id="2_7ux0y"]
+[ext_resource type="PackedScene" uid="uid://bqh6mlrej1uii" path="res://hud.tscn" id="4_1imxe"]
 
 [sub_resource type="Curve2D" id="Curve2D_ffqt5"]
 _data = {
@@ -19,10 +20,8 @@ enemy_scene = ExtResource("2_7ux0y")
 [node name="StartTimer" type="Timer" parent="."]
 wait_time = 3.0
 one_shot = true
-autostart = true
 
 [node name="EnemyTimer" type="Timer" parent="."]
-autostart = true
 
 [node name="EnemyPath" type="Path2D" parent="."]
 curve = SubResource("Curve2D_ffqt5")
@@ -31,6 +30,8 @@ curve = SubResource("Curve2D_ffqt5")
 
 [node name="TowerPosition" type="Marker2D" parent="."]
 position = Vector2(240, 360)
+
+[node name="HUD" parent="." instance=ExtResource("4_1imxe")]
 
 [connection signal="body_entered" from="TowerScene" to="TowerScene" method="_on_body_entered"]
 [connection signal="timeout" from="StartTimer" to="." method="_on_start_timer_timeout"]
