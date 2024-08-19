@@ -44,13 +44,14 @@ func _process(delta: float) -> void:
 func apply_damage():
 	for enemy in get_tree().get_nodes_in_group("damaging_tower"):
 		health -= enemy.damage  # Subtract enemy's damage from tower's health
-		print(health)
-		if health <= 0:
+		if health <= 1:
+			health = 1
 			die()  # Handle the tower's destruction when health reaches 0
 
 # Handle tower's destruction
 func die():
-	queue_free()  # You can expand this with an animation or game over logic
+	hide()
+	set_process(false)
 
 func _on_damage_timer_timeout() -> void:
 	apply_damage()  # Apply damage every time the timer triggers

@@ -48,7 +48,8 @@ func _on_restart_game() -> void:
 	
 	# Start the game logic again
 	set_process(true)
-	
+	tower.show()
+	tower.set_process(true)
 	# Restart the enemy timer
 	$StartTimer.start()
 

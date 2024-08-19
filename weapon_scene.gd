@@ -4,7 +4,7 @@ extends Node2D
 @export var attack_speed: float = 0.5  # Time between shots
 @export var num_projectiles: int = 2  # Number of projectiles shot at once
 @export var projectile_speed: float = 200.0  # Speed of the projectiles
-@export var damage: int = 10  # Damage of the projectiles
+@export var damage: int = 2.5  # Damage of the projectiles
 
 var shooting: bool = false
 
