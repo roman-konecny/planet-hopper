@@ -5,8 +5,8 @@ var current_tier: int = 1
 var current_difficulty: int = 1
 
 var enemy_health_damage_multiplier: float = 1.0
-var enemy_wave_duration: float = 10.0
-var enemy_wave_size: int = 10
+var enemy_wave_duration: float = 15.0
+var enemy_wave_size: int = 5
 var reward_per_enemy: int = 1
 
 func get_enemy_spawn_rate() -> float:
@@ -73,17 +73,25 @@ func set_next_wave() -> void:
 	set_damage_multiplier()
 	set_reward_count()
 	
-	enemy_wave_size = current_wave * 10
 	if (current_wave < 10):
-		enemy_wave_duration = 10
+		enemy_wave_duration = 25
+		enemy_wave_size = current_wave * 2
+		
 	elif (current_wave >= 10 and current_wave < 20):
-		enemy_wave_duration = 15
+		enemy_wave_duration = 30
+		enemy_wave_size = current_wave * 3
+		
 	elif (current_wave >= 20 and current_wave < 30):
-		enemy_wave_duration = 20
+		enemy_wave_duration = 35
+		enemy_wave_size = current_wave * 4
+		
 	elif (current_wave >= 30 and current_wave < 40):
-		enemy_wave_duration = 30
+		enemy_wave_duration = 35
+		enemy_wave_size = current_wave * 7
+		
 	elif (current_wave >= 40 and current_wave <= 50):
-		enemy_wave_duration = 30
+		enemy_wave_duration = 50
+		enemy_wave_size = current_wave * 8
 
 func increaseTier() -> void:
 	if (current_tier < 3):

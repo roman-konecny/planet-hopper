@@ -10,7 +10,7 @@ func _ready() -> void:
 	hud.connect("start_game", Callable(self, "_on_start_game"))
 	hud.connect("restart_game", Callable(self, "_on_restart_game"))
 	hud.connect("next_wave", Callable(self, "_on_next_wave"))
-	
+	Engine.time_scale = 5
 	# Initially, stop the game logic
 	set_process(false)
 	
