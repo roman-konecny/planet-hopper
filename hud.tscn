@@ -66,87 +66,96 @@ offset_bottom = 124.0
 text = "Next Wave"
 
 [node name="BonusDamageLabel" type="Label" parent="."]
-offset_left = 44.0
-offset_top = 662.0
-offset_right = 84.0
-offset_bottom = 685.0
+offset_top = 616.0
+offset_right = 48.0
+offset_bottom = 648.0
 text = "DMG"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="BonusCritMLabel" type="Label" parent="."]
-offset_left = 286.0
-offset_top = 662.0
-offset_right = 326.0
-offset_bottom = 685.0
+offset_top = 656.0
+offset_right = 48.0
+offset_bottom = 688.0
 text = "CM"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="BonusCritCLabel" type="Label" parent="."]
-offset_left = 292.0
-offset_top = 610.0
-offset_right = 332.0
-offset_bottom = 633.0
+offset_left = 192.0
+offset_top = 656.0
+offset_right = 240.0
+offset_bottom = 688.0
 text = "CC"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="BonusDefRadLabel" type="Label" parent="."]
-offset_left = 284.0
-offset_top = 563.0
-offset_right = 324.0
-offset_bottom = 586.0
+offset_left = 192.0
+offset_top = 576.0
+offset_right = 240.0
+offset_bottom = 608.0
 text = "DR"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="BonusProjNumLabel" type="Label" parent="."]
-offset_left = 49.0
-offset_top = 612.0
-offset_right = 89.0
-offset_bottom = 635.0
+offset_left = 192.0
+offset_top = 616.0
+offset_right = 240.0
+offset_bottom = 648.0
 text = "PR"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="BonusASLabel" type="Label" parent="."]
-offset_left = 50.0
-offset_top = 560.0
-offset_right = 90.0
-offset_bottom = 583.0
+offset_top = 576.0
+offset_right = 40.0
+offset_bottom = 608.0
 text = "AS"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="AddBonusDamage" type="Button" parent="."]
-offset_left = 224.0
-offset_top = 662.0
-offset_right = 280.0
-offset_bottom = 693.0
+offset_left = 104.0
+offset_top = 616.0
+offset_right = 160.0
+offset_bottom = 647.0
 text = "DMG+"
 
 [node name="AddBonusCritM" type="Button" parent="."]
-offset_left = 419.0
-offset_top = 660.0
-offset_right = 462.0
-offset_bottom = 691.0
+offset_left = 104.0
+offset_top = 656.0
+offset_right = 147.0
+offset_bottom = 687.0
 text = "CM+"
 
 [node name="AddBonusCritC" type="Button" parent="."]
-offset_left = 427.0
-offset_top = 603.0
-offset_right = 465.0
-offset_bottom = 634.0
+offset_left = 296.0
+offset_top = 656.0
+offset_right = 334.0
+offset_bottom = 687.0
 text = "CC+"
 
 [node name="AddBonusDefRad" type="Button" parent="."]
-offset_left = 422.0
-offset_top = 554.0
-offset_right = 462.0
-offset_bottom = 585.0
+offset_left = 296.0
+offset_top = 576.0
+offset_right = 336.0
+offset_bottom = 607.0
 text = "DR+"
 
 [node name="AddBonusProjNum" type="Button" parent="."]
-offset_left = 227.0
-offset_top = 613.0
-offset_right = 267.0
-offset_bottom = 644.0
+offset_left = 296.0
+offset_top = 616.0
+offset_right = 336.0
+offset_bottom = 647.0
 text = "PN+"
 
 [node name="AddBonusAS" type="Button" parent="."]
-offset_left = 224.0
-offset_top = 562.0
-offset_right = 261.0
-offset_bottom = 593.0
+offset_left = 104.0
+offset_top = 576.0
+offset_right = 141.0
+offset_bottom = 607.0
 text = "AS+"
 
 [connection signal="pressed" from="StartButton" to="." method="_on_start_button_pressed"]
