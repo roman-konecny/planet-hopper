@@ -35,7 +35,9 @@ func check_enemies_in_range() -> Array:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	defence_radius = GameConfig.base_defence_radius + GameConfig.bonus_defence_radius
+	if (GameConfig.base_defence_radius + GameConfig.bonus_defence_radius != defence_radius):
+		defence_radius = GameConfig.base_defence_radius + GameConfig.bonus_defence_radius
+		queue_redraw()
 	var enemies_in_range = check_enemies_in_range()
 	for weapon in weapon_slots:
 		if enemies_in_range.size() > 0:
