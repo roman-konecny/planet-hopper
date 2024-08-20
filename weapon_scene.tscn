@@ -6,10 +6,6 @@
 [node name="WeaponScene" type="Node2D"]
 script = ExtResource("1_cnqlv")
 projectile_scene = ExtResource("2_xn65e")
-attack_speed = 1.0
-num_projectiles = 1
-projectile_speed = 150.0
-damage = 1
 
 [node name="FireRate" type="Timer" parent="."]
 wait_time = 0.7

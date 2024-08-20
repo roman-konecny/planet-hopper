@@ -10,10 +10,12 @@ func _ready() -> void:
 	hud.connect("start_game", Callable(self, "_on_start_game"))
 	hud.connect("restart_game", Callable(self, "_on_restart_game"))
 	hud.connect("next_wave", Callable(self, "_on_next_wave"))
-	Engine.time_scale = 5
+	#Engine.time_scale = 5
 	# Initially, stop the game logic
 	set_process(false)
+	hud.hide_ingame_buttons()
 	
+	$Background.set_scale(Vector2(0.45, 0.38))
 	# Set the initial position of the tower
 	tower.position = $TowerPosition.position
 
@@ -21,6 +23,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	# Update HUD with current health
 	hud.update_health(tower.health)
+	hud.update_ingame_stats_labels()
 	hud.update_essence(PlayerData.player_essence)
 	hud.update_wave_count()
 
@@ -59,6 +62,7 @@ func _on_restart_game() -> void:
 func _on_start_timer_timeout() -> void:
 	$EnemyTimer.wait_time = GameConfig.get_enemy_spawn_rate()
 	$EnemyTimer.start()  # Start the enemy spawn timer
+	hud.show_ingame_buttons()
 
 func _on_next_wave() -> void:
 	GameConfig.set_next_wave()
@@ -96,6 +100,7 @@ func _on_game_over() -> void:
 	
 	# Stop enemy spawning
 	$EnemyTimer.stop()
+	hud.hide_ingame_buttons()
 	
 	# Show the game over screen
 	hud.show_game_over()

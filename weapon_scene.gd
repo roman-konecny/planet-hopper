@@ -1,10 +1,10 @@
 extends Node2D
 
 @export var projectile_scene: PackedScene  # The projectile scene this weapon will shoot
-@export var attack_speed: float = 0.1  # Time between shots
-@export var num_projectiles: int = 5  # Number of projectiles shot at once
-@export var projectile_speed: float = 200.0  # Speed of the projectiles
-@export var damage: int = 5  # Damage of the projectiles
+@export var attack_speed: float = 1 / GameConfig.base_attack_speed # Time between shots
+@export var num_projectiles: int = GameConfig.base_projectile_number  # Number of projectiles shot at once
+@export var projectile_speed: float = 150  # Speed of the projectiles
+@export var damage: int = GameConfig.base_damage  # Damage of the projectiles
 
 var shooting: bool = false
 
@@ -12,6 +12,11 @@ var target: Area2D = null  # Current target
 
 func _ready() -> void:
 	$FireRate.wait_time = attack_speed
+
+func _process(delta: float) -> void:
+	$FireRate.wait_time = 1 / (GameConfig.base_attack_speed + GameConfig.bonus_attack_speed)
+	damage = GameConfig.base_damage + GameConfig.bonus_damage
+	num_projectiles = GameConfig.base_projectile_number + GameConfig.bonus_projectile_number
 
 # Function to start shooting at the target
 func shoot(target: Area2D) -> void:
@@ -23,7 +28,7 @@ func shoot(target: Area2D) -> void:
 			projectile.set_direction(direction_to_target)  # Set the movement direction
 			projectile.rotation = direction_to_target.angle() + PI/2
 			projectile.speed = projectile_speed
-			projectile.damage = damage
+			projectile.damage = damage * crit_multiply()
 			get_tree().root.add_child(projectile)
 
 func _on_fire_rate_timeout() -> void:
@@ -40,3 +45,13 @@ func _on_check_for_enemy_timeout() -> void:
 		shoot(target)
 		$FireRate.start()
 		$CheckForEnemy.stop()
+
+func crit_multiply() -> float:
+	if (GameConfig.bonus_crit_chance > 0):
+		if (is_crit()):
+			return GameConfig.base_crit_multiplier + GameConfig.bonus_crit_multiplier
+	return GameConfig.base_crit_multiplier
+
+func is_crit() -> bool:
+	var roll = randi() % 100
+	return roll < GameConfig.base_crit_chance + GameConfig.bonus_crit_chance

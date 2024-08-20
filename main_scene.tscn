@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://c4wlg6fu8osnp"]
+[gd_scene load_steps=7 format=3 uid="uid://c4wlg6fu8osnp"]
 
 [ext_resource type="PackedScene" uid="uid://clh5u2jxrkvbe" path="res://tower_scene.tscn" id="1_hiend"]
 [ext_resource type="Script" path="res://main_scene.gd" id="1_te228"]
 [ext_resource type="PackedScene" uid="uid://d2ulbsp621yio" path="res://enemy_scene.tscn" id="2_7ux0y"]
+[ext_resource type="Texture2D" uid="uid://h88av1dc4150" path="res://art/background/backround.png" id="3_qo11o"]
 [ext_resource type="PackedScene" uid="uid://bqh6mlrej1uii" path="res://hud.tscn" id="4_1imxe"]
 
 [sub_resource type="Curve2D" id="Curve2D_ffqt5"]
@@ -14,6 +15,13 @@ point_count = 5
 [node name="MainScene" type="Node"]
 script = ExtResource("1_te228")
 enemy_scene = ExtResource("2_7ux0y")
+
+[node name="Background" type="TextureRect" parent="."]
+modulate = Color(0.76662, 0.76662, 0.76662, 1)
+offset_right = 1080.0
+offset_bottom = 1920.0
+texture = ExtResource("3_qo11o")
+stretch_mode = 2
 
 [node name="TowerScene" parent="." instance=ExtResource("1_hiend")]
 

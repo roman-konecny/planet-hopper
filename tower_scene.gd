@@ -8,7 +8,7 @@ extends Area2D
 
 # Draw the defense radius for visualization
 func _draw() -> void:
-	draw_circle(Vector2.ZERO, defence_radius, Color(1, 0, 0, 0.2))  # Draw a semi-transparent red circle
+	draw_circle(Vector2.ZERO, defence_radius, Color(1, 0, 0, 0.4))  # Draw a semi-transparent red circle
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -35,6 +35,7 @@ func check_enemies_in_range() -> Array:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
+	defence_radius = GameConfig.base_defence_radius + GameConfig.bonus_defence_radius
 	var enemies_in_range = check_enemies_in_range()
 	for weapon in weapon_slots:
 		if enemies_in_range.size() > 0:
