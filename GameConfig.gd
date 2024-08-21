@@ -112,7 +112,7 @@ func decreaseDifficulty() -> void:
 # UPGRADES
 
 var base_damage: int = 1
-var base_crit_multiplier: float = 1.0
+var base_crit_multiplier: float = 0.0
 var base_crit_chance: int = 0
 var base_defence_radius: float = 100.0
 var base_projectile_number: int = 1
@@ -125,25 +125,46 @@ var bonus_defence_radius: float = 0.0
 var bonus_projectile_number: int = 0
 var bonus_attack_speed: float = 0.0
 
+var base_price_damage: int = 1
+var base_price_crit_multiplier: int = 5
+var base_price_crit_chance: int = 10
+var base_price_defence_radius: int = 20
+var base_price_projectile_number: int = 20
+var base_price_attack_speed: int = 20
+
+var current_price_damage: int = 1
+var current_price_crit_multiplier: int = 5
+var current_price_crit_chance: int = 10
+var current_price_defence_radius: int = 20
+var current_price_projectile_number: int = 100
+var current_price_attack_speed: int = 20
+
 func upgrade_damage() -> void:
 	bonus_damage += 1
-	PlayerData.player_essence -= 5
+	current_price_damage = base_price_damage + 2 * base_price_damage + 0.5 * current_price_damage
+	PlayerData.player_essence -= current_price_damage
 
 func upgrade_crit_multiplier() -> void:
 	bonus_crit_multiplier += 0.1
-	PlayerData.player_essence -= 5
+	current_price_damage = base_price_damage + 2 * base_price_damage + 0.5 * current_price_damage
+	PlayerData.player_essence -= current_price_crit_multiplier
 
 func upgrade_crit_chance() -> void:
 	bonus_crit_chance += 1
-	PlayerData.player_essence -= 10
+	current_price_damage = base_price_damage + 2 * base_price_damage + 0.5 * current_price_damage
+	PlayerData.player_essence -= current_price_crit_chance
 
 func upgrade_defence_radius() -> void:
 	bonus_defence_radius += 5
-	PlayerData.player_essence -= 10
+	current_price_damage = base_price_damage + 2 * base_price_damage + 0.5 * current_price_damage
+	PlayerData.player_essence -= current_price_defence_radius
 
 func upgrade_projectile_number() -> void:
 	bonus_projectile_number += 1
-	PlayerData.player_essence -= 50
+	current_price_damage = base_price_damage + 2 * base_price_damage + 2.5 * current_price_damage
+	PlayerData.player_essence -= current_price_projectile_number
 
 func upgrade_attack_speed() -> void:
-	PlayerData.player_essence -= 5
+	bonus_attack_speed += 1
+	current_price_damage = base_price_damage + 2 * base_price_damage + 0.5 * current_price_damage
+	PlayerData.player_essence -= current_price_attack_speed

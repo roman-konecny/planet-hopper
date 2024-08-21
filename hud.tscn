@@ -66,18 +66,19 @@ offset_bottom = 124.0
 text = "Next Wave"
 
 [node name="BonusDamageLabel" type="Label" parent="."]
-offset_top = 616.0
+offset_top = 632.0
 offset_right = 48.0
-offset_bottom = 648.0
-text = "DMG"
+offset_bottom = 664.0
+text = "Damage"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="BonusCritMLabel" type="Label" parent="."]
-offset_top = 656.0
-offset_right = 48.0
-offset_bottom = 688.0
-text = "CM"
+offset_top = 672.0
+offset_right = 76.0
+offset_bottom = 721.0
+text = "Critical 
+Multiplier"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -110,9 +111,10 @@ vertical_alignment = 1
 
 [node name="BonusASLabel" type="Label" parent="."]
 offset_top = 576.0
-offset_right = 40.0
-offset_bottom = 608.0
-text = "AS"
+offset_right = 50.0
+offset_bottom = 625.0
+text = "Attack
+speed"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -121,14 +123,17 @@ offset_left = 104.0
 offset_top = 616.0
 offset_right = 160.0
 offset_bottom = 647.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
 text = "DMG+"
 
 [node name="AddBonusCritM" type="Button" parent="."]
-offset_left = 104.0
-offset_top = 656.0
-offset_right = 147.0
-offset_bottom = 687.0
-text = "CM+"
+modulate = Color(1, 1, 1, 0.529412)
+offset_left = 80.0
+offset_top = 672.0
+offset_right = 123.0
+offset_bottom = 703.0
+text = "+"
 
 [node name="AddBonusCritC" type="Button" parent="."]
 offset_left = 296.0
@@ -151,12 +156,118 @@ offset_right = 336.0
 offset_bottom = 647.0
 text = "PN+"
 
+[node name="AddBonusProjNum2" type="Button" parent="."]
+offset_left = 64.0
+offset_top = 816.0
+offset_right = 104.0
+offset_bottom = 847.0
+text = "RFCD+"
+
+[node name="AddBonusProjNum3" type="Button" parent="."]
+offset_left = 64.0
+offset_top = 856.0
+offset_right = 104.0
+offset_bottom = 887.0
+text = "HP+"
+
+[node name="AddBonusProjNum4" type="Button" parent="."]
+offset_left = 64.0
+offset_top = 896.0
+offset_right = 104.0
+offset_bottom = 927.0
+text = "HPR+"
+
+[node name="AddBonusProjNum5" type="Button" parent="."]
+offset_left = 64.0
+offset_top = 976.0
+offset_right = 104.0
+offset_bottom = 1007.0
+text = "Thorsns +"
+
+[node name="AddBonusProjNum6" type="Button" parent="."]
+offset_left = 64.0
+offset_top = 936.0
+offset_right = 104.0
+offset_bottom = 967.0
+text = "D+"
+
 [node name="AddBonusAS" type="Button" parent="."]
 offset_left = 104.0
 offset_top = 576.0
 offset_right = 141.0
 offset_bottom = 607.0
 text = "AS+"
+
+[node name="AddBonusmultishotc" type="Button" parent="."]
+offset_left = 64.0
+offset_top = 736.0
+offset_right = 106.0
+offset_bottom = 767.0
+text = "MSC+"
+
+[node name="AddBonusAS3" type="Button" parent="."]
+offset_left = 64.0
+offset_top = 776.0
+offset_right = 106.0
+offset_bottom = 807.0
+text = "RFC+
+"
+
+[node name="multishotchace" type="Label" parent="."]
+offset_top = 736.0
+offset_right = 40.0
+offset_bottom = 768.0
+text = "MSC"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BonusASLabel4" type="Label" parent="."]
+offset_top = 776.0
+offset_right = 40.0
+offset_bottom = 808.0
+text = "RFC"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BonusASLabel5" type="Label" parent="."]
+offset_top = 816.0
+offset_right = 40.0
+offset_bottom = 848.0
+text = "RFCD"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BonusASLabel6" type="Label" parent="."]
+offset_top = 856.0
+offset_right = 40.0
+offset_bottom = 888.0
+text = "HP"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BonusASLabel7" type="Label" parent="."]
+offset_top = 896.0
+offset_right = 40.0
+offset_bottom = 928.0
+text = "HPR"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BonusASLabel8" type="Label" parent="."]
+offset_top = 936.0
+offset_right = 40.0
+offset_bottom = 968.0
+text = "D"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BonusASLabel9" type="Label" parent="."]
+offset_top = 976.0
+offset_right = 40.0
+offset_bottom = 1008.0
+text = "Thorns"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [connection signal="pressed" from="StartButton" to="." method="_on_start_button_pressed"]
 [connection signal="pressed" from="RestartButton" to="." method="_on_restart_button_pressed"]
@@ -166,4 +277,11 @@ text = "AS+"
 [connection signal="pressed" from="AddBonusCritC" to="." method="_on_add_bonus_crit_c_pressed"]
 [connection signal="pressed" from="AddBonusDefRad" to="." method="_on_add_bonus_def_rad_pressed"]
 [connection signal="pressed" from="AddBonusProjNum" to="." method="_on_add_bonus_proj_num_pressed"]
+[connection signal="pressed" from="AddBonusProjNum2" to="." method="_on_add_bonus_proj_num_pressed"]
+[connection signal="pressed" from="AddBonusProjNum3" to="." method="_on_add_bonus_proj_num_pressed"]
+[connection signal="pressed" from="AddBonusProjNum4" to="." method="_on_add_bonus_proj_num_pressed"]
+[connection signal="pressed" from="AddBonusProjNum5" to="." method="_on_add_bonus_proj_num_pressed"]
+[connection signal="pressed" from="AddBonusProjNum6" to="." method="_on_add_bonus_proj_num_pressed"]
 [connection signal="pressed" from="AddBonusAS" to="." method="_on_add_bonus_as_pressed"]
+[connection signal="pressed" from="AddBonusmultishotc" to="." method="_on_add_bonus_as_pressed"]
+[connection signal="pressed" from="AddBonusAS3" to="." method="_on_add_bonus_as_pressed"]
