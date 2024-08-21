@@ -36,28 +36,28 @@ func update_health(health: int) -> void:
 	$HealthLabel.text = "Health: %d" % health
 
 func update_essence(essence: int) -> void:
-	$Essence.text = "E: %d" % essence
+	$Essence.text = "Essence: %d" % essence
 
 func update_wave_count() -> void:
-	$WaveCount.text = "Wave number: %d" % GameConfig.current_wave
+	$WaveCount.text = "Wave: %d" % GameConfig.current_wave
 
 func update_bonus_damage() -> void:
-	$BonusDamageLabel.text = "Damage: %d" % GameConfig.bonus_damage
+	$AddBonusDamage.text = "Damage: %d" % GameConfig.bonus_damage + " | +%dE" % GameConfig.current_price_damage
 
 func update_bonus_crit_m() -> void:
-	$BonusCritMLabel.text = "CritM: %.1f" % GameConfig.bonus_crit_multiplier
+	$AddBonusCritM.text = "Crit Multiplier: %.1f" % GameConfig.bonus_crit_multiplier + " | +%dE" % GameConfig.current_price_crit_multiplier
 
 func update_bonus_crit_c() -> void:
-	$BonusCritCLabel.text = "CritC: %d" % GameConfig.bonus_crit_chance
+	$AddBonusCritC.text = "Crit Chance: %d" % GameConfig.bonus_crit_chance + " | +%dE" % GameConfig.current_price_crit_chance
 
 func update_bonus_defense_rad() -> void:
-	$BonusDefRadLabel.text = "DefRad: %.1f" % GameConfig.bonus_defence_radius
+	$AddBonusDefRad.text = "Defense Radius: %.1f" % GameConfig.bonus_defence_radius + " | +%dE" % GameConfig.current_price_defence_radius
 
 func update_bonus_projectile_num() -> void:
-	$BonusProjNumLabel.text = "ProjNum: %d" % GameConfig.bonus_projectile_number
+	$AddBonusProjNum.text = "Projectile count: %d" % GameConfig.bonus_projectile_number + " | +%dE" % GameConfig.current_price_projectile_number
 
 func update_bonus_attack_s() -> void:
-	$BonusASLabel.text = "AS: %.1f" % GameConfig.bonus_attack_speed
+	$AddBonusAS.text = "Attack Speed: %.1f" % GameConfig.bonus_attack_speed + " | +%dE" % GameConfig.current_price_attack_speed
 
 func update_ingame_stats_labels() -> void:
 	update_bonus_attack_s()
@@ -100,12 +100,6 @@ func show_ingame_buttons() -> void:
 	$AddBonusDamage.show()
 	$AddBonusDefRad.show()
 	$AddBonusProjNum.show()
-	$BonusASLabel.show()
-	$BonusCritCLabel.show()
-	$BonusCritMLabel.show()
-	$BonusDamageLabel.show()
-	$BonusDefRadLabel.show()
-	$BonusProjNumLabel.show()
 
 func hide_ingame_buttons() -> void:
 	$AddBonusAS.hide()
@@ -114,9 +108,12 @@ func hide_ingame_buttons() -> void:
 	$AddBonusDamage.hide()
 	$AddBonusDefRad.hide()
 	$AddBonusProjNum.hide()
-	$BonusASLabel.hide()
-	$BonusCritCLabel.hide()
-	$BonusCritMLabel.hide()
-	$BonusDamageLabel.hide()
-	$BonusDefRadLabel.hide()
-	$BonusProjNumLabel.hide()
+
+var auto_wave: bool = false
+
+func _on_auto_wave_toggle_pressed() -> void:
+	auto_wave = not auto_wave
+	if (auto_wave):
+		$AutoWaveToggle.text = "Auto: On"
+	else:
+		$AutoWaveToggle.text = "Auto: Off"

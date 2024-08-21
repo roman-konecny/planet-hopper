@@ -38,6 +38,7 @@ func _on_start_game() -> void:
 	
 	# Initialize or reset any game variables
 	hud.update_health(tower.health)
+	hud.show_ingame_buttons()
 	
 	# Start the enemy timer
 	$StartTimer.start()
@@ -62,7 +63,6 @@ func _on_restart_game() -> void:
 func _on_start_timer_timeout() -> void:
 	$EnemyTimer.wait_time = GameConfig.get_enemy_spawn_rate()
 	$EnemyTimer.start()  # Start the enemy spawn timer
-	hud.show_ingame_buttons()
 
 func _on_next_wave() -> void:
 	GameConfig.set_next_wave()
@@ -75,7 +75,10 @@ func _on_enemy_timer_timeout() -> void:
 		return
 	if (GameConfig.enemy_wave_size == 0):
 		$EnemyTimer.stop()
-		hud.show_next_wave()
+		if (not hud.auto_wave):
+			hud.show_next_wave()
+		else:
+			_on_next_wave()
 		return
 	var enemy = enemy_scene.instantiate()  # Create a new enemy instance
 	# Choose a random location on the EnemyPath
