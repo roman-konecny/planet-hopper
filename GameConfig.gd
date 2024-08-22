@@ -74,24 +74,24 @@ func set_next_wave() -> void:
 	set_reward_count()
 	
 	if (current_wave < 10):
-		enemy_wave_duration = 25
+		enemy_wave_duration = 15
 		enemy_wave_size = current_wave * 2
 		
 	elif (current_wave >= 10 and current_wave < 20):
+		enemy_wave_duration = 25
+		enemy_wave_size = current_wave * 2
+		
+	elif (current_wave >= 20 and current_wave < 30):
 		enemy_wave_duration = 30
 		enemy_wave_size = current_wave * 3
 		
-	elif (current_wave >= 20 and current_wave < 30):
+	elif (current_wave >= 30 and current_wave < 40):
 		enemy_wave_duration = 35
 		enemy_wave_size = current_wave * 4
 		
-	elif (current_wave >= 30 and current_wave < 40):
-		enemy_wave_duration = 35
-		enemy_wave_size = current_wave * 7
-		
 	elif (current_wave >= 40 and current_wave <= 50):
 		enemy_wave_duration = 50
-		enemy_wave_size = current_wave * 8
+		enemy_wave_size = current_wave * 5
 
 func increaseTier() -> void:
 	if (current_tier < 3):
@@ -147,24 +147,24 @@ func upgrade_damage() -> void:
 func upgrade_crit_multiplier() -> void:
 	bonus_crit_multiplier += 0.1
 	PlayerData.player_essence -= current_price_crit_multiplier
-	current_price_crit_multiplier = base_price_crit_multiplier + 2 * base_price_crit_multiplier + 0.5 * current_price_crit_multiplier
+	current_price_crit_multiplier = base_price_crit_multiplier + 2 * base_price_crit_multiplier + 2 * current_price_crit_multiplier
 
 func upgrade_crit_chance() -> void:
 	bonus_crit_chance += 1
 	PlayerData.player_essence -= current_price_crit_chance
-	current_price_crit_chance = base_price_crit_chance + 2 * base_price_crit_chance + 0.5 * current_price_crit_chance
+	current_price_crit_chance = base_price_crit_chance + 2 * base_price_crit_chance + 1.7 * current_price_crit_chance
 
 func upgrade_defence_radius() -> void:
-	bonus_defence_radius += 5
+	bonus_defence_radius += 1
 	PlayerData.player_essence -= current_price_defence_radius
-	current_price_defence_radius = base_price_defence_radius + 2 * base_price_defence_radius + 0.5 * current_price_defence_radius
+	current_price_defence_radius = base_price_defence_radius + 2 * base_price_defence_radius + 3 * current_price_defence_radius
 
 func upgrade_projectile_number() -> void:
 	bonus_projectile_number += 1
 	PlayerData.player_essence -= current_price_projectile_number
-	current_price_projectile_number = base_price_projectile_number + 2 * base_price_projectile_number + 2.5 * current_price_projectile_number
+	current_price_projectile_number = base_price_projectile_number + 2 * base_price_projectile_number + 25 * current_price_projectile_number
 
 func upgrade_attack_speed() -> void:
-	bonus_attack_speed += 1
+	bonus_attack_speed += 0.1
 	PlayerData.player_essence -= current_price_attack_speed
-	current_price_attack_speed = base_price_attack_speed + 2 * base_price_attack_speed + 0.5 * current_price_attack_speed
+	current_price_attack_speed = base_price_attack_speed + 2 * base_price_attack_speed + 4 * current_price_attack_speed
