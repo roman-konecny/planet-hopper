@@ -10,10 +10,11 @@ size = Vector2(14, 20)
 script = ExtResource("1_kk3us")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(-1.19209e-07, -1.19209e-07)
+scale = Vector2(0.625, 0.625)
 texture = ExtResource("1_hvh6u")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -6)
 shape = SubResource("RectangleShape2D_qsry8")
 
 [connection signal="area_entered" from="." to="." method="_on_enemy_hit"]

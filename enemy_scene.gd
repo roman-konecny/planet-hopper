@@ -2,7 +2,7 @@ extends Area2D
 
 @export var health: int = 1 * GameConfig.enemy_health_damage_multiplier
 @export var damage: int = 1 * GameConfig.enemy_health_damage_multiplier
-@export var speed: float = 100.0
+@export var speed: float = 50.0
 var direction: Vector2 = Vector2.ZERO  # Initialize direction as a zero vector
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

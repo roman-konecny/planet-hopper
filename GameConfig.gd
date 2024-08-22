@@ -5,8 +5,8 @@ var current_tier: int = 1
 var current_difficulty: int = 1
 
 var enemy_health_damage_multiplier: float = 1.0
-var enemy_wave_duration: float = 15.0
-var enemy_wave_size: int = 5
+var enemy_wave_duration: float = 10.0
+var enemy_wave_size: int = 4
 var reward_per_enemy: int = 1
 
 func get_enemy_spawn_rate() -> float:

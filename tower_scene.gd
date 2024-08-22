@@ -1,7 +1,7 @@
 extends Area2D
 
 @export var health: int = 100
-@export var defence_radius: float = 100.0
+@export var defence_radius: float = 75.0
 @export var weapon_slots: Array = []
 @export var weapons_cnt: int = PlayerData.weapon_upgrades.get("weapon_slots_unlocked")
 @export var weapon_scene: PackedScene

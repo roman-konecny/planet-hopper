@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://m6x1ttg7tf4q" path="res://art/tower.png" id="2_fnpkc"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qxagb"]
-size = Vector2(74, 79)
+size = Vector2(32, 32)
 
 [node name="TowerScene" type="Area2D"]
 script = ExtResource("1_84611")
@@ -15,7 +15,8 @@ weapon_scene = ExtResource("2_c0ohr")
 shape = SubResource("RectangleShape2D_qxagb")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-scale = Vector2(0.2, 0.2)
+position = Vector2(2.38419e-07, 0)
+scale = Vector2(0.0790123, 0.0790123)
 texture = ExtResource("2_fnpkc")
 
 [node name="DamageTimer" type="Timer" parent="."]
@@ -23,15 +24,19 @@ wait_time = 0.6
 autostart = true
 
 [node name="WeaponSlot1" type="Marker2D" parent="."]
-position = Vector2(-20, -20)
+position = Vector2(-8, -8)
+scale = Vector2(0.5, 0.5)
 
 [node name="WeaponSlot2" type="Marker2D" parent="."]
-position = Vector2(20, -20)
+position = Vector2(8, -8)
+scale = Vector2(0.5, 0.5)
 
 [node name="WeaponSlot3" type="Marker2D" parent="."]
-position = Vector2(20, 20)
+position = Vector2(8, 8)
+scale = Vector2(0.5, 0.5)
 
 [node name="WeaponSlot4" type="Marker2D" parent="."]
-position = Vector2(-20, 20)
+position = Vector2(-8, 8)
+scale = Vector2(0.5, 0.5)
 
 [connection signal="timeout" from="DamageTimer" to="." method="_on_damage_timer_timeout"]

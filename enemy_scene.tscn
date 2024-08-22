@@ -4,15 +4,18 @@
 [ext_resource type="Texture2D" uid="uid://drqpd13lqpslv" path="res://art/enemies/enemy1.png" id="2_kkm20"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jjdhb"]
-size = Vector2(16, 16)
+size = Vector2(8, 8)
 
 [node name="EnemyScene" type="Area2D"]
 script = ExtResource("1_qc2i2")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(-4, -4)
+scale = Vector2(0.5, 0.5)
 texture = ExtResource("2_kkm20")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-4, -4)
 shape = SubResource("RectangleShape2D_jjdhb")
 
 [connection signal="area_entered" from="." to="." method="_on_tower_hit"]
