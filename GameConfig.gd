@@ -143,32 +143,47 @@ var current_price_defence_radius: int = 20
 var current_price_projectile_number: int = 100
 var current_price_attack_speed: int = 20
 
+func can_upgrade(x: float) -> bool:
+	return x <= PlayerData.player_essence
+
 func upgrade_damage() -> void:
+	if (!can_upgrade(current_price_damage)):
+		return
 	bonus_damage += 1
 	PlayerData.player_essence -= current_price_damage
 	current_price_damage = base_price_damage + bonus_damage * bonus_damage
 
 func upgrade_crit_multiplier() -> void:
+	if (!can_upgrade(current_price_crit_multiplier)):
+		return
 	bonus_crit_multiplier += 0.1
 	PlayerData.player_essence -= current_price_crit_multiplier
 	current_price_crit_multiplier = base_price_crit_multiplier + 2 * base_price_crit_multiplier + 2 * current_price_crit_multiplier
 
 func upgrade_crit_chance() -> void:
+	if (!can_upgrade(current_price_crit_chance)):
+		return
 	bonus_crit_chance += 1
 	PlayerData.player_essence -= current_price_crit_chance
 	current_price_crit_chance = base_price_crit_chance + 2 * base_price_crit_chance + 1.7 * current_price_crit_chance
 
 func upgrade_defence_radius() -> void:
+	if (!can_upgrade(current_price_defence_radius)):
+		return
 	bonus_defence_radius += 1
 	PlayerData.player_essence -= current_price_defence_radius
 	current_price_defence_radius = base_price_defence_radius + 2 * base_price_defence_radius + 3 * current_price_defence_radius
 
 func upgrade_projectile_number() -> void:
+	if (!can_upgrade(current_price_projectile_number)):
+		return
 	bonus_projectile_number += 1
 	PlayerData.player_essence -= current_price_projectile_number
 	current_price_projectile_number = base_price_projectile_number + 2 * base_price_projectile_number + 25 * current_price_projectile_number
 
 func upgrade_attack_speed() -> void:
+	if (!can_upgrade(current_price_attack_speed)):
+		return
 	bonus_attack_speed += 0.1
 	PlayerData.player_essence -= current_price_attack_speed
 	current_price_attack_speed = base_price_attack_speed + 2 * base_price_attack_speed + 4 * current_price_attack_speed
