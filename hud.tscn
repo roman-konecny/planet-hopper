@@ -183,6 +183,13 @@ offset_right = 436.0
 offset_bottom = 87.0
 text = "Auto: Off"
 
+[node name="GameSpeed" type="Button" parent="."]
+offset_left = 440.0
+offset_top = 56.0
+offset_right = 466.0
+offset_bottom = 87.0
+text = "1x"
+
 [connection signal="pressed" from="StartButton" to="." method="_on_start_button_pressed"]
 [connection signal="pressed" from="RestartButton" to="." method="_on_restart_button_pressed"]
 [connection signal="pressed" from="NextWave" to="." method="_on_next_wave_pressed"]
@@ -200,3 +207,4 @@ text = "Auto: Off"
 [connection signal="pressed" from="AddBonusMultishotC" to="." method="_on_add_bonus_as_pressed"]
 [connection signal="pressed" from="AddBonusRapidFireC" to="." method="_on_add_bonus_as_pressed"]
 [connection signal="pressed" from="AutoWaveToggle" to="." method="_on_auto_wave_toggle_pressed"]
+[connection signal="pressed" from="GameSpeed" to="." method="_on_game_speed_pressed"]

@@ -117,3 +117,12 @@ func _on_auto_wave_toggle_pressed() -> void:
 		$AutoWaveToggle.text = "Auto: On"
 	else:
 		$AutoWaveToggle.text = "Auto: Off"
+
+var game_speed: int = 1
+
+func _on_game_speed_pressed() -> void:
+	if (game_speed > 4):
+		game_speed = 1
+	else:
+		game_speed += 1
+	$GameSpeed.text = "%dx" % game_speed

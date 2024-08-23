@@ -10,7 +10,6 @@ func _ready() -> void:
 	hud.connect("start_game", Callable(self, "_on_start_game"))
 	hud.connect("restart_game", Callable(self, "_on_restart_game"))
 	hud.connect("next_wave", Callable(self, "_on_next_wave"))
-	#Engine.time_scale = 5
 	# Initially, stop the game logic
 	set_process(false)
 	hud.hide_ingame_buttons()
@@ -26,6 +25,8 @@ func _process(delta: float) -> void:
 	hud.update_ingame_stats_labels()
 	hud.update_essence(PlayerData.player_essence)
 	hud.update_wave_count()
+	
+	Engine.time_scale = hud.game_speed
 
 	# Check for game over condition
 	if tower.health <= 1:
@@ -39,7 +40,7 @@ func _on_start_game() -> void:
 	# Initialize or reset any game variables
 	hud.update_health(tower.health)
 	hud.show_ingame_buttons()
-	
+	PlayerData.player_essence = 0
 	# Start the enemy timer
 	$StartTimer.start()
 
@@ -51,7 +52,7 @@ func _on_restart_game() -> void:
 	
 	# Reset any other game elements (enemies, score, etc.)
 	reset_game()
-	
+	hud.show_ingame_buttons()
 	# Start the game logic again
 	set_process(true)
 	tower.show()
