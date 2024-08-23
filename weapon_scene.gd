@@ -3,7 +3,7 @@ extends Node2D
 @export var projectile_scene: PackedScene  # The projectile scene this weapon will shoot
 @export var attack_speed: float = 1 / GameConfig.base_attack_speed # Time between shots
 @export var num_projectiles: int = GameConfig.base_projectile_number  # Number of projectiles shot at once
-@export var projectile_speed: float = 150  # Speed of the projectiles
+@export var projectile_speed: float = 200  # Speed of the projectiles
 @export var damage: int = GameConfig.base_damage  # Damage of the projectiles
 
 var shooting: bool = false
