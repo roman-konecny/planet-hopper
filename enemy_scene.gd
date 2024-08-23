@@ -5,11 +5,10 @@ extends Area2D
 @export var speed: float = 50.0
 var direction: Vector2 = Vector2.ZERO  # Initialize direction as a zero vector
 
-func _ready() -> void:
-	$Health.text = "%d" % health
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	# Move in the assigned direction
+	$Health.text = "%d" % health
 	if direction != Vector2.ZERO:
 		global_position += direction * speed * delta
 	if health <= 0:
