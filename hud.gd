@@ -57,7 +57,7 @@ func update_bonus_projectile_num() -> void:
 	$AddBonusProjNum.text = "Projectile count: %d" % (GameConfig.bonus_projectile_number + GameConfig.base_projectile_number) + " | +%dE" % GameConfig.current_price_projectile_number
 
 func update_bonus_attack_s() -> void:
-	$AddBonusAS.text = "Attack Speed: %.1f" % (GameConfig.bonus_attack_speed + GameConfig.base_attack_speed) + " | +%dE" % GameConfig.current_price_attack_speed
+	$AddBonusAS.text = "Attack Speed: %.2f" % (GameConfig.bonus_attack_speed + GameConfig.base_attack_speed) + " | +%dE" % GameConfig.current_price_attack_speed
 
 func update_ingame_stats_labels() -> void:
 	update_bonus_attack_s()

@@ -3,7 +3,7 @@ extends Node2D
 @export var projectile_scene: PackedScene  # The projectile scene this weapon will shoot
 @export var attack_speed: float = 1 / GameConfig.base_attack_speed # Time between shots
 @export var num_projectiles: int = GameConfig.base_projectile_number  # Number of projectiles shot at once
-@export var projectile_speed: float = 200  # Speed of the projectiles
+@export var projectile_speed: float = 100  # Speed of the projectiles
 @export var damage: int = GameConfig.base_damage  # Damage of the projectiles
 
 var shooting: bool = false
@@ -23,7 +23,10 @@ func shoot(target: Area2D) -> void:
 	if target != null and is_instance_valid(target):
 		for i in range(num_projectiles):
 			var projectile = projectile_scene.instantiate()
-			projectile.global_position = Vector2(global_position.x + 10*i, global_position.y)
+			if (i % 2 == 0):
+				projectile.global_position = Vector2(global_position.x + 3*i, global_position.y + 3*i)
+			else:
+				projectile.global_position = Vector2(global_position.x - 3*i, global_position.y - 3*i)
 			var direction_to_target = (target.global_position - global_position).normalized()
 			projectile.set_direction(direction_to_target)  # Set the movement direction
 			projectile.rotation = direction_to_target.angle() + PI/2
