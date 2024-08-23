@@ -142,7 +142,7 @@ var current_price_attack_speed: int = 20
 func upgrade_damage() -> void:
 	bonus_damage += 1
 	PlayerData.player_essence -= current_price_damage
-	current_price_damage = base_price_damage + 2 * base_price_damage + 0.5 * current_price_damage
+	current_price_damage = base_price_damage + bonus_damage * bonus_damage
 
 func upgrade_crit_multiplier() -> void:
 	bonus_crit_multiplier += 0.1
