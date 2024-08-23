@@ -7,7 +7,8 @@ var current_difficulty: int = 1
 var enemy_health_damage_multiplier: float = 1.0
 var enemy_wave_duration: float = 10.0
 var enemy_wave_size: int = 4
-var reward_per_enemy: int = 1
+var base_reward_per_enemy: int = 1
+var current_reward_per_enemy: int = 1
 
 func get_enemy_spawn_rate() -> float:
 	return enemy_wave_duration / enemy_wave_size
@@ -37,7 +38,7 @@ func get_wave_multiplier() -> float:
 func get_difficulty_multiplier() -> float:
 	return 1.0
 
-func get_reward_difficulty_multiplier() -> int:
+func get_reward_difficulty_multiplier() -> float:
 	if (current_difficulty == 1):
 		return 1
 	elif (current_difficulty == 2):
@@ -46,7 +47,7 @@ func get_reward_difficulty_multiplier() -> int:
 		return 3
 	return 1
 
-func get_reward_tier_multiplier() -> int:
+func get_reward_tier_multiplier() -> float:
 	if (current_tier == 1):
 		return 1
 	elif (current_tier == 2):
@@ -54,6 +55,9 @@ func get_reward_tier_multiplier() -> int:
 	elif (current_tier == 3):
 		return 8
 	return 1
+	
+func get_reward_wave_multiplier() -> float:
+	return current_wave * 1.5
 
 func set_damage_multiplier() -> void:
 	var t_m: float = get_tier_multiplier()
@@ -62,7 +66,7 @@ func set_damage_multiplier() -> void:
 	enemy_health_damage_multiplier = t_m * w_m * d_m
 
 func set_reward_count() -> void:
-	reward_per_enemy = get_reward_tier_multiplier() * get_reward_difficulty_multiplier()
+	current_reward_per_enemy = base_reward_per_enemy * get_reward_wave_multiplier() * get_reward_tier_multiplier() * get_reward_difficulty_multiplier()
 
 func set_next_wave() -> void:
 	if (current_wave < 50):

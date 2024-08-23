@@ -11,7 +11,7 @@ func _process(delta: float) -> void:
 	if direction != Vector2.ZERO:
 		global_position += direction * speed * delta
 	if health <= 0:
-		PlayerData.player_essence += GameConfig.reward_per_enemy
+		PlayerData.player_essence += GameConfig.current_reward_per_enemy
 		queue_free()
 
 # Method to set the direction of the enemy

@@ -42,22 +42,22 @@ func update_wave_count() -> void:
 	$WaveCount.text = "Wave: %d" % GameConfig.current_wave
 
 func update_bonus_damage() -> void:
-	$AddBonusDamage.text = "Damage: %d" % GameConfig.bonus_damage + " | +%dE" % GameConfig.current_price_damage
+	$AddBonusDamage.text = "Damage: %d" % (GameConfig.bonus_damage + GameConfig.base_damage) + " | +%dE" % GameConfig.current_price_damage
 
 func update_bonus_crit_m() -> void:
-	$AddBonusCritM.text = "Crit Multiplier: %.1f" % GameConfig.bonus_crit_multiplier + " | +%dE" % GameConfig.current_price_crit_multiplier
+	$AddBonusCritM.text = "Crit Multiplier: %.1f" % (GameConfig.bonus_crit_multiplier + GameConfig.base_crit_multiplier) + " | +%dE" % GameConfig.current_price_crit_multiplier
 
 func update_bonus_crit_c() -> void:
-	$AddBonusCritC.text = "Crit Chance: %d" % GameConfig.bonus_crit_chance + " | +%dE" % GameConfig.current_price_crit_chance
+	$AddBonusCritC.text = "Crit Chance: %d" % (GameConfig.bonus_crit_chance + GameConfig.base_crit_chance) + " | +%dE" % GameConfig.current_price_crit_chance
 
 func update_bonus_defense_rad() -> void:
-	$AddBonusDefRad.text = "Defense Radius: %.1f" % GameConfig.bonus_defence_radius + " | +%dE" % GameConfig.current_price_defence_radius
+	$AddBonusDefRad.text = "Defense Radius: %.1f" % (GameConfig.bonus_defence_radius + GameConfig.base_defence_radius) + " | +%dE" % GameConfig.current_price_defence_radius
 
 func update_bonus_projectile_num() -> void:
-	$AddBonusProjNum.text = "Projectile count: %d" % GameConfig.bonus_projectile_number + " | +%dE" % GameConfig.current_price_projectile_number
+	$AddBonusProjNum.text = "Projectile count: %d" % (GameConfig.bonus_projectile_number + GameConfig.base_projectile_number) + " | +%dE" % GameConfig.current_price_projectile_number
 
 func update_bonus_attack_s() -> void:
-	$AddBonusAS.text = "Attack Speed: %.1f" % GameConfig.bonus_attack_speed + " | +%dE" % GameConfig.current_price_attack_speed
+	$AddBonusAS.text = "Attack Speed: %.1f" % (GameConfig.bonus_attack_speed + GameConfig.base_attack_speed) + " | +%dE" % GameConfig.current_price_attack_speed
 
 func update_ingame_stats_labels() -> void:
 	update_bonus_attack_s()
